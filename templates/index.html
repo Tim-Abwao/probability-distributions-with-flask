@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Flask Demo</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css')}}">
+
+</head>
+<body style="background-image: url({{ url_for('static',filename='2.jpg') }}); ">
+	
+	<div class="content" style="margin-top: 5%;">
+		<!-- Toggle introduction -->
+		{% if show_intro %}
+		<h1>Python Flask Demo</h1>
+
+		<p>This is a simple web application to showcase some of Python's packages (Flask, SciPy, Pandas, Matplotlib and Seaborn, among others) by exploring some common and useful statistical distributions.</p>
+
+		<p>The plan is to enable anyone to get basic facts about the selected distributions, create a random sample, see how it looks and even get a downloadable file.</p>
+		<p>To give it a try, please select a distribution:</p>
+	
+		{% endif %}
+
+		<form action="{{ url_for('statistics')}}" method="post"=>
+			<select name='statdist'>
+				<!-- Populate drop-down list -->
+				{% for i in range(q) %}
+					<option value="{{ distlist[i] }}">{{ distlist[i]}}</option>
+				{% endfor %}
+			</select>
+			<input class="button" type="submit" >
+		</form>
+	</div>
+
+	<div class="content">
+		
+		{% if d %}
+			<p>{{ 'Current selection: '~ d ~ ' Distribution'}}</p>
+			<!-- Toggle distribution information -->
+			{% for inf in info %}
+				<p>{{ inf }}</p>
+			{% endfor %}
+			<!-- Create parameter input fields -->
+			{% if par %}
+				<form action="{{ url_for('selection')}}" method="post">
+					{% for i in range(par) %}
+						{{ 'Parameter ' ~ (i+1) }}
+						<input type="number" name="{{ 'par ' ~ (i+1) }}"  min="0" max="100000" step="0.001" required placeholder="{{ par2[i] }}"><br>
+					{% endfor %}
+					Sample Size <input type="number" name="sample_size"  max="10000000" required><br>
+					<input class="button" type="submit" value="Submit" >
+				</form>
+			{% endif %}
+
+		{% endif %}
+
+	</div>
+
+	<div class="content">
+		<!-- Display sample results -->
+		{% if y %}
+			<span>{{ 'Sample size: '~n}} &emsp;</span>
+				<!-- Display applied parameters -->
+				{% for i in range(nparams) %}
+					<span>{{ (par3[i])~': '~(parameters[i]) }} &emsp;</span>
+				{% endfor %}
+			<br>
+			<img src="{{ url_for('static', filename= y )}}" style="width:100%; ">
+			<br>
+			<!-- Display sample statistics -->
+			{% for stat in z %}
+				<span>{{ stat[0] ~ stat[1] }}</span><br>
+			{% endfor %}
+			<!-- Display preview -->	
+			{% if preview %}
+				<h4>A Preview of the above {{d}} random sample.</h4>
+				<table style="margin: auto;">
+					<tr><th></th><th>X</th></tr>
+					{% for i in pr %}
+						<tr><td>{{ i[0] }}</td><td>{{ i[1] }}</td></tr>
+						{% endfor %}
+				</table>
+			{% endif %}
+			<br>
+			<a href="{{ url_for('static', filename='files/data.csv') }}">Download Sample </a><br><br>
+			<a href="{{ url_for('index') }} " >Back to home page</a>
+		{% endif %}
+
+	</div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+body { 
+		max-width: 1000px; 
+		text-align: center; 
+		margin: auto; 
+		font-size: 1.35em;"
+	}
+select {
+		padding: 10px 70px;
+		background: inherit;
+		border: 4px solid teal;
+		border-radius: 10px;
+		margin: 20px;
+	}
+input  {
+		padding: 10px ;
+		border: 4px solid teal;
+		border-radius: 10px;
+		margin: 20px;
+		width: 220px; 
+	}
+.button {
+		background: teal;
+		padding: 7px 20px;
+		width: 150px;
+	}
+.button:hover{
+		color: white;
+		background: black;
+		border: 2px solid black;
+	}
+.content {
+		margin: 2% 10%;
+	}
+table, th, td {
+		border: 1px solid black;
+		border: none;
+	    padding: 10px;
+		width: 50%;
+	}
+tr:nth-child(even) {
+		  background-color: rgb(0, 128, 128,0.4);
+		}
