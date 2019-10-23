@@ -12,20 +12,20 @@
 	<div class="content" style="margin-top: 5%;">
 		<!-- Toggle introduction -->
 		{% if show_intro %}
-		<h1>Python Flask Demo</h1>
+			<h1>Python Flask Demo</h1>
 
-		<p>This is a simple web application to showcase some of Python's packages (Flask, SciPy, Pandas, Matplotlib and Seaborn, among others) by exploring some common and useful statistical distributions.</p>
+			<p>This is a simple web application to showcase some of Python's packages (Flask, SciPy, Pandas, Matplotlib and Seaborn, among others) by exploring some common and useful statistical distributions.</p>
 
-		<p>The plan is to enable anyone to get basic facts about the selected distributions, create a random sample, see how it looks and even get a downloadable file.</p>
-		<p>To give it a try, please select a distribution:</p>
+			<p>The plan is to enable anyone to get basic facts about the selected distributions, create a random sample, see how it looks and even get a downloadable file.</p>
+			<p>To give it a try, please select a distribution:</p>
 	
 		{% endif %}
 
-		<form action="{{ url_for('statistics')}}" method="post"=>
+		<form action="{{ url_for('parameters')}}" method="post">
 			<select name='statdist'>
 				<!-- Populate drop-down list -->
 				{% for i in range(q) %}
-					<option value="{{ distlist[i] }}">{{ distlist[i]}}</option>
+					<option value="{{ distributions[i] }}">{{ distributions[i]}}</option>
 				{% endfor %}
 			</select>
 			<input class="button" type="submit" >
@@ -36,16 +36,16 @@
 		
 		{% if d %}
 			<p>{{ 'Current selection: '~ d ~ ' Distribution'}}</p>
-			<!-- Toggle distribution information -->
+			<!-- Display distribution information -->
 			{% for inf in info %}
 				<p>{{ inf }}</p>
 			{% endfor %}
-			<!-- Create parameter input fields -->
-			{% if par %}
+			<!-- Create parameter-input fields -->
+			{% if num_params %}
 				<form action="{{ url_for('selection')}}" method="post">
-					{% for i in range(par) %}
+					{% for i in range(num_params) %}
 						{{ 'Parameter ' ~ (i+1) }}
-						<input type="number" name="{{ 'par ' ~ (i+1) }}"  min="0" max="100000" step="0.001" required placeholder="{{ par2[i] }}"><br>
+						<input type="number" name="{{ 'par ' ~ (i+1) }}"  min="0" max="100000" step="0.001" required placeholder="{{ param_def[i] }}"><br>
 					{% endfor %}
 					Sample Size <input type="number" name="sample_size"  max="10000000" required><br>
 					<input class="button" type="submit" value="Submit" >
@@ -58,17 +58,17 @@
 
 	<div class="content">
 		<!-- Display sample results -->
-		{% if y %}
+		{% if graph %}
 			<span>{{ 'Sample size: '~n}} &emsp;</span>
 				<!-- Display applied parameters -->
 				{% for i in range(nparams) %}
-					<span>{{ (par3[i])~': '~(parameters[i]) }} &emsp;</span>
+					<span>{{ (param_def[i])~': '~(parameters[i]) }} &emsp;</span>
 				{% endfor %}
 			<br>
-			<img src="{{ url_for('static', filename= y )}}" style="width:100%; ">
+			<img src="{{ url_for('static', filename= graph )}}" style="width:100%; ">
 			<br>
-			<!-- Display sample statistics -->
-			{% for stat in z %}
+			<!-- Display sample summary-statistics -->
+			{% for stat in summary_stats %}
 				<span>{{ stat[0] ~ stat[1] }}</span><br>
 			{% endfor %}
 			<!-- Display preview -->	
@@ -76,7 +76,7 @@
 				<h4>A Preview of the above {{d}} random sample.</h4>
 				<table style="margin: auto;">
 					<tr><th></th><th>X</th></tr>
-					{% for i in pr %}
+					{% for i in preview %}
 						<tr><td>{{ i[0] }}</td><td>{{ i[1] }}</td></tr>
 						{% endfor %}
 				</table>
