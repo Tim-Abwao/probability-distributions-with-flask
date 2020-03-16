@@ -5,18 +5,16 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css')}}">
-
 </head>
 <body style="background-image: url({{ url_for('static',filename='2.jpg') }}); ">
-	
 	<div class="content" style="margin-top: 5%;">
 		<!-- Toggle introduction -->
 		{% if show_intro %}
 			<h1>Python Flask Demo</h1>
 
-			<p>This is a simple web application to showcase some of Python's packages (Flask, SciPy, Pandas, Matplotlib and Seaborn, among others) by exploring some common and useful statistical distributions.</p>
+			<p>This is a simple web application to explore some useful <b>statistical distributions</b>, and showcase some of Python's packages (Flask, SciPy, Pandas, Matplotlib and Seaborn, among others).</p>
 
-			<p>The plan is to enable anyone to get basic facts about the selected distributions, create a random sample, see how it looks and even get a downloadable file.</p>
+			<p>The idea is to enable anyone to get basic facts about the selected distributions, generate a random sample, view its shape and even download the data.</p>
 			<p>To give it a try, please select a distribution:</p>
 	
 		{% endif %}
@@ -35,7 +33,7 @@
 	<div class="content">
 		
 		{% if d %}
-			<p>{{ 'Current selection: '~ d ~ ' Distribution'}}</p>
+			<h3>{{ 'Current selection: '~ d ~ ' Distribution'}}</h3>
 			<!-- Display distribution information -->
 			{% for inf in info %}
 				<p>{{ inf }}</p>

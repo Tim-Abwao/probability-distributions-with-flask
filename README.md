@@ -1,31 +1,28 @@
-# A Flask App For Exploring Statistical Distributions
+# Flask web app for exploring Statistical Distributions
 
-A simple application to navigate through some common statistical distributions. Powered by [Flask](https://palletsprojects.com/p/flask/), a Python module for development of web applications. The application is live [here](https://statistics-distributions.herokuapp.com).
+A simple app to learn something about several popular and useful statistical distributions. 
 
-## Prerequisites
-- It's always ideal to work in a virtual environment. Create one at your project directory,  and activate it with:
-```
+Powered by [Flask](https://palletsprojects.com/p/flask/), [Pandas](https://pandas.pydata.org), [SciPy](https://www.scipy.org) and [Seaborn](https://seaborn.pydata.org). The application is live [here](https://statistics-distributions.herokuapp.com).
+
+## Getting Started
+Download the files, create a virtual environment, and activate it using:
+``` bash
+git clone https://github.com/Tim-Abwao/statistical-distributions-flask.git
+cd statistical-distributions-flask
 python3 -m venv venv
 source venv/bin/activate
-```
-Or, for **Windows**,
-```
-py -3 -m venv venv
-venv\Scripts\activate
+
 ```
 
-- Then install the required packages with:
-```
+Then, install the required packages with:
+```bash
 pip install -r requirements.txt
+
 ```
-- There are various ways to run the application. A simple one is:
-```
+There are various ways to run the application. A simple one is:
+```bash
 python3 app.py
+
 ```
-The app should then run at [localhost:5000](http://127.0.0.1:5000) Head there, and
-enjoy/explore.
+Head on to [localhost:5000](http://127.0.0.1:5000). Explore...
 
-
-
-
-> Written with [StackEdit](https://stackedit.io/).
