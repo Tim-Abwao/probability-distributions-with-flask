@@ -70,4 +70,4 @@ def selection():
 		return render_template('index.html',d=distr, distributions=distributions, q=q, parameters=parameters, param_def=param_def, nparams=nparams, n=n, graph=graph, summary_stats=summary_stats, preview=preview)
 
 if __name__=='__main__':
-	app.run(debug=True)
+	app.run()
