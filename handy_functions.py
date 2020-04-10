@@ -7,17 +7,18 @@ import glob
 import datetime
 from statistics import mean,median,stdev,mode
 
-def default_prob(p):
+def validate_probability(p):
     """
-    Ensuring probabilities stick to range 0<=p<=1 by assigning default p=0.5 for values over 1
+    Ensures probabilities stick to the range 0<=p<=1 by assigning a default value of p=0.5 for entries greater than 1
     """
-    if p > 1:
-        p=0.5 
-    return p
+    if 0 <= p <= 1:
+        return p
+    else:
+        return 0.5
 
 def get_random_sample(distribution,size,parameters):
     """
-    Return a random sample of size {size} with the given parameter(s) for the specified distribution.
+    Returns a random sample of size {size} with the given {parameters}, for the specified {distribution}.
     """
     params=list(parameters)
     
@@ -97,52 +98,45 @@ def get_random_sample(distribution,size,parameters):
         return sampl
     return 1
 
+def clear_old_files(extension):
+    old_files=glob.glob('static/files/*.'+extension, recursive=True)
+    for file in old_files:
+        os.remove(file)
 
 def get_graph(data):
     """
-    Plot a distribution plot of the random sample and save it as a png image file
+    Plots a distribution graph of the random sample and saves it to a png file
     """
-
-    #remove old graphs
-    old_files=glob.glob('static/files/*.png', recursive=True)
-    for fl in old_files:
-        os.remove(fl)
-    #create new time-defined name for the graph file
-    new_path='files/'+str(datetime.datetime.now())+'.png'
-    
+    #clear old graphs
+    clear_old_files('png')
+    #create time-stamped name for the graph image
+    new_name=str(datetime.datetime.now())+'.png'
     plt.figure(figsize=(10,6))
     sns.set()
     sns.distplot(data, color='teal')
     plt.xticks(rotation=90)
-    plt.savefig('static/'+ new_path, transparent=True)
-    
-    return new_path
+    plt.savefig('static/files/'+ new_name, transparent=True)
+    return new_name
 
-def descr_stats(random_sample):
+def descriptive_stats(random_sample):
     """
-    Get descriptive statistics for the random sample
+    Returns basic descriptive statistics for the random sample
     """
-    #handle instances of missing/insufficient data
     try:
-        mu=round(mean(random_sample),4)
-        med=round(median(random_sample),4)
+        _mean=round(mean(random_sample),4)
+        _median=round(median(random_sample),4)
     except ValueError:
-        med=mu='No data to process.'
+        _median=_mean='No data to process.'
      
     try:
         std=round(stdev(random_sample),4)
-        mi=round(min(random_sample),4)
-        ma=round(max(random_sample),4)
+        _min=round(min(random_sample),4)
+        _max=round(max(random_sample),4)
     except ValueError:
-        std=mi=ma= 'Not available. At least 2 data points required.'
+        std=_min=_max= 'Not available. At least 2 data points required.'
     
     try: 
-        mod=round(mode(random_sample),4)
+        _mode=round(mode(random_sample),4)
     except ValueError:
-        mod='No unique mode.'
-    return [('Mean: ',mu),('Median: ',med),('Mode: ',mod),('Min: ',mi),('Max: ',ma),('Standard Deviation: ',std)]
-
-
-
-
-
+        _mode='No unique mode.'
+    return [('Mean: ',_mean),('Median: ',_median),('Mode: ',_mode),('Min: ',_min),('Max: ',_max),('Standard Deviation: ',std)]

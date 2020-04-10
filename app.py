@@ -2,72 +2,75 @@
 # coding: utf-8
 from flask import Flask, render_template, request, redirect, url_for
 import pandas as pd
-from handy_functions import default_prob, get_random_sample, get_graph, descr_stats
+from handy_functions import get_random_sample, get_graph, descriptive_stats, validate_probability, clear_old_files
 
 app=Flask(__name__)
 
-#get the distribution-info file
-df=pd.read_csv('data/distributions.csv', index_col='distribution')
-
-distributions=list(df.index) # a list of the distribution names
-q=len(distributions)
-distr='Please Select'  #initial choice of distribution before overwriting by form-data
+#getting the distribution summaries
+distribution_data=pd.read_csv('data/distributions.csv', index_col='distribution')
+distribution_names=list(distribution_data.index)
+tally=len(distribution_names)
+default_dist='Please Select'  #initial choice of distribution
 
 @app.route('/')
 def index():
-	return render_template('index.html', distributions=distributions, q=q, show_intro=True)
+	return render_template('index.html', distributions=distribution_names, tally=tally, show_intro=True)
 
 @app.route('/parameters', methods=['POST', 'GET'])
 def parameters():
 	if request.method=='POST':
-		#extract form-data
-		distr=request.form['statdist']
+		#extracting form data
+		chosen_distr=request.form['chosen_dist']
 
 		#save selected distribution for future reference
-		with open('data/current_selection.txt', 'w') as f:
-			f.write(distr)
+		with open('data/current_selection.txt', 'w') as file:
+			file.write(chosen_distr)
 
-		num_params=df.at[distr,'nparams']	
-		param_def=df.at[distr,'param_def'].split(',') 
-		info=df.at[distr, 'summary'].split('|')
+		num_params=distribution_data.at[chosen_distr,'no_of_parameters']	
+		param_info=distribution_data.at[chosen_distr,'parameter_info'].split(',') 
+		dist_summary=distribution_data.at[chosen_distr, 'summary'].split('|')
 
-		return render_template('index.html', d=distr, distributions=distributions,q=q, num_params=num_params, param_def=param_def, info=info)
+		return render_template('index.html', chosen_distr=chosen_distr, distributions=distribution_names,tally=tally, num_params=num_params, param_info=param_info, dist_summary=dist_summary, input_form=True)
 
 @app.route('/distribution', methods=['POST', 'GET'])
 def selection():
 	if request.method=='POST':
-		#extract form data
-		n=int(request.form['sample_size'])
+		#extracting form data
+		sample_size=int(request.form['sample_size'])
 
-		with open('data/current_selection.txt', 'r') as fp:
-			distr=fp.read()
+		with open('data/current_selection.txt', 'r') as file:
+			chosen_distr=file.read()
 			
-		nparams=df.at[distr,'nparams']
-		parameters=[float(request.form['par '+str(i+1)]) for i in range(nparams)]
-		param_def=df.at[distr,'param_def'].split(',')
+		num_params=distribution_data.at[chosen_distr,'no_of_parameters']
+		parameters=[float(request.form['parameter '+str(i+1)]) for i in range(num_params)]
+		param_info=distribution_data.at[chosen_distr,'parameter_info'].split(',')
 		
-		#ensure 0<=p<=1 for affected distributions
-		if distr in ['Negative Binomial','Binomial','Geometric','Bernoulli']:
-			if parameters[-1]>1:
-				parameters[-1]=default_prob(parameters[-1])
+		#ensuring 0<=p<=1 for affected distributions
+		if chosen_distr in ['Negative Binomial','Binomial','Geometric','Bernoulli']:
+			parameters[-1]=validate_probability(parameters[-1]) # p is the rightmost parameter
 
-		#create and process the sample
-		random_sample=get_random_sample(distr, n, parameters)
+		#creating and processing the sample
+		random_sample=get_random_sample(chosen_distr, sample_size, parameters)
 		graph=get_graph(random_sample)
-		summary_stats=descr_stats(random_sample)
-		title= distr + ' distribution'
-		df2=pd.DataFrame({ title: random_sample})
+		summary_stats=descriptive_stats(random_sample)
+		title = chosen_distr+' distribution'
+		sample_data=pd.DataFrame({ title: random_sample})
 		
-		#create preview
-		if len(df2)>0:
-			preview=list(df2[title].round(7).head(20))
-			preview=enumerate(preview, start=1)
-		else: preview=False
+		#generating a preview
+		if len(sample_data)>0:
+			preview=list(sample_data[title].head(20).round(7))  # the preview as a dataframe
+			preview=enumerate(preview, start=1) # the preview as a list of tuples
+		else: 
+			preview=False
 		
-		#create csv file for download
-		df2.to_csv('static/files/data.csv')
+		#clear old samples
+		clear_old_files('csv')
 
-		return render_template('index.html',d=distr, distributions=distributions, q=q, parameters=parameters, param_def=param_def, nparams=nparams, n=n, graph=graph, summary_stats=summary_stats, preview=preview)
+		#creating a csv file for download
+		sample_name=chosen_distr+'_sample_data.csv'
+		sample_data.to_csv('static/files/'+sample_name)
+
+		return render_template('index.html',chosen_distr=chosen_distr, distributions=distribution_names, tally=tally, parameters=parameters, param_info=param_info, num_params=num_params, sample_size=sample_size, graph=graph, summary_stats=summary_stats, preview=preview, sample_name=sample_name)
 
 if __name__=='__main__':
 	app.run()
