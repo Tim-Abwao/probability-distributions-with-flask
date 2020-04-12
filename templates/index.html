@@ -52,17 +52,17 @@
 	<div class="content">
 		<!-- Displaying sample's graph and preview -->
 		{% if graph %}
-			<span>{{ 'Sample size: '~sample_size}} &emsp;</span><br>
+			{{ 'Sample size: ' }} <span style="color: teal;"> {{sample_size}} &emsp;</span><br>
 				<!-- Display selected parameters -->
 				{% for i in range(num_params) %}
-					<span>{{ (param_info[i])~': '~(parameters[i]) }} &emsp;</span><br>
+					{{ (param_info[i])~': ' }} <span style="color: teal;"> {{ (parameters[i]) }} &emsp;</span><br>
 				{% endfor %}
 			<br>
 			<img src="{{ url_for('static', filename= 'files/'~graph )}}" style="width:100%; ">
 			<br>
 			<!-- Displaying sample's summary statistics -->
 			{% for statistic in summary_stats %}
-				<span>{{ statistic[0] ~ statistic[1] }}</span><br>
+				{{ statistic[0] }} <span style="color: teal;"> {{ statistic[1] }}</span><br>
 			{% endfor %}
 			<!-- Displaying preview as a table -->	
 			{% if preview %}
