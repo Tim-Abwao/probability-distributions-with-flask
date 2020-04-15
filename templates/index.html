@@ -9,9 +9,15 @@
 <body style="background-image: url({{ url_for('static',filename='background.jpg') }}); ">
 	<div class="content" style="margin-top: 5%;">
 		{% if show_intro %}   <!-- Toggle introductory statement -->
-			<h1>Statistical Distributions - Flask Demo</h1>
-			<p>This is a simple web application to explore some useful <b>statistical distributions</b>, and showcase some of Python's packages (Flask, SciPy, Pandas, Matplotlib and Seaborn, among others).</p>
-			<p>The idea is to enable anyone to get basic facts about the selected distributions, generate a random sample, view its shape and even download the data.</p>
+			<h1>Statistical Distribution Sampler</h1>
+			<p>This is a simple web app to explore some useful <b>statistical distributions</b>, and showcase the functionality of some Python packages (Flask, SciPy, Pandas, Matplotlib and Seaborn, among others).</p>
+			<p>The idea is to enable anyone to: </p>
+			<ul> 
+				<li> get basic facts about a distribution </li>
+				<li> specificy parameters of choice</li>
+				<li> generate a downloadable sample, and</li>
+				<li> view graphs and summary statistics. </li>
+			</ul>
 			<p>To give it a try, please select a distribution:</p>
 		{% endif %}
 
@@ -33,8 +39,10 @@
 			{% for info in dist_summary %}
 				<p>{{ info }}</p>
 			{% endfor %}
+			<a style="color: teal;" href="{{ learn_more }}" target="_blank"> <i>learn more...</i></a><br>
 			<!-- Collecting parameter input-->
 			{% if input_form %}
+				<p>Fill out the fields below to create a sample, and see see how it looks.</p>
 				<form action="{{ url_for('selection')}}" method="post">
 					{% for i in range(num_params) %}
 						{{ 'Parameter ' ~ (i+1) }}
@@ -51,14 +59,16 @@
 
 	<div class="content">
 		<!-- Displaying sample's graph and preview -->
-		{% if graph %}
+		{% if graphs %}
 			{{ 'Sample size: ' }} <span style="color: teal;"> {{sample_size}} &emsp;</span><br>
 				<!-- Display selected parameters -->
 				{% for i in range(num_params) %}
 					{{ (param_info[i])~': ' }} <span style="color: teal;"> {{ (parameters[i]) }} &emsp;</span><br>
 				{% endfor %}
 			<br>
-			<img src="{{ url_for('static', filename= 'files/'~graph )}}" style="width:100%; ">
+			{% for graph in graphs %}
+				<img src="{{ url_for('static', filename= 'files/'~graph )}}" style="width:100%; ">
+			{% endfor %}
 			<br>
 			<!-- Displaying sample's summary statistics -->
 			{% for statistic in summary_stats %}

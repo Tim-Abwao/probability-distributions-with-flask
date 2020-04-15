@@ -2,18 +2,18 @@ body {
 		max-width: 1000px; 
 		text-align: center; 
 		margin: auto; 
-		font-size: 1.35em;"
+		font-size: 1.35em;
 	}
 select {
 		padding: 10px 70px;
 		background: inherit;
-		border: 4px solid teal;
+		box-shadow: 4px 4px 8px teal;
 		border-radius: 10px;
 		margin: 20px;
 	}
 input  {
 		padding: 10px ;
-		border: 4px solid teal;
+		box-shadow: 4px 4px 8px teal;
 		border-radius: 10px;
 		margin: 20px;
 		width: 220px; 
