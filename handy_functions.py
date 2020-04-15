@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 import glob
-import datetime
+from datetime import datetime
 from statistics import mean, median, stdev, mode
 
 
@@ -95,20 +95,37 @@ def clear_old_files(extension):
         os.remove(file)
 
 
-def get_graph(data):
+def get_graphs(data):
     """
-    Plots a distribution graph of the random sample and saves it to a png file
+    Plots  distribution graph of the random sample and saves it to a png file
     """
     # clear old graphs
     clear_old_files('png')
-    # create time-stamped name for the graph image
-    new_name = str(datetime.datetime.now()) + '.png'
-    plt.figure(figsize=(10, 6))
+    # create time-stamped names for the graph image
+    new_names = [str(datetime.now()) + f'_{i}.png' for i in ['distplot',
+                                                             'violinplot',
+                                                             'boxplot']]
+    graph_folder = 'static/files/'
     sns.set()
+    # Distribution plot
+    plt.figure(figsize=(10, 6))
     sns.distplot(data, color='teal')
     plt.xticks(rotation=90)
-    plt.savefig('static/files/' + new_name, transparent=True)
-    return new_name
+    plt.title('Distribution plot', fontsize=25, fontweight=550, pad=20)
+    plt.savefig(graph_folder + new_names[0], transparent=True)
+    # Violin plot
+    plt.figure(figsize=(10, 6))
+    sns.violinplot(data, color='#3FBFBF')
+    plt.xticks(rotation=90)
+    plt.title('Violin plot', fontsize=25, fontweight=550, pad=20)
+    plt.savefig(graph_folder + new_names[1], transparent=True)
+    # Box plot
+    plt.figure(figsize=(10, 6))
+    sns.boxplot(data, color='#3FBFBF')
+    plt.xticks(rotation=90)
+    plt.title('Box plot', fontsize=25, fontweight=550, pad=20)
+    plt.savefig(graph_folder + new_names[2], transparent=True)
+    return new_names
 
 
 def descriptive_stats(random_sample):
@@ -133,4 +150,5 @@ def descriptive_stats(random_sample):
     except ValueError:
         _mode = 'No unique mode.'
     return [('Mean: ', _mean), ('Median: ', _median), ('Mode: ', _mode),
-            ('Min: ', _min), ('Max: ', _max), ('Standard Deviation: ', std)]
+            ('Standard Deviation: ', std), ('Minimum: ', _min),
+            ('Maximum: ', _max)]
