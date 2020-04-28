@@ -102,30 +102,29 @@ def get_graphs(data):
     # clear old graphs
     clear_old_files('png')
     # create time-stamped names for the graph image
-    new_names = [str(datetime.now()) + f'_{i}.png' for i in ['distplot',
-                                                             'violinplot',
-                                                             'boxplot']]
-    graph_folder = 'static/files/'
+    graph_names = ['files/' + str(datetime.now()) + f'_{i}.png' \
+    for i in ['distplot', 'violinplot', 'boxplot']]
+    graph_loc = ['static/' + i for i in graph_names]
     sns.set()
     # Distribution plot
     plt.figure(figsize=(10, 6))
     sns.distplot(data, color='teal')
     plt.xticks(rotation=90)
     plt.title('Distribution plot', fontsize=25, fontweight=550, pad=20)
-    plt.savefig(graph_folder + new_names[0], transparent=True)
+    plt.savefig(graph_loc[0], transparent=True)
     # Violin plot
     plt.figure(figsize=(10, 6))
     sns.violinplot(data, color='#3FBFBF')
     plt.xticks(rotation=90)
     plt.title('Violin plot', fontsize=25, fontweight=550, pad=20)
-    plt.savefig(graph_folder + new_names[1], transparent=True)
+    plt.savefig(graph_loc[1], transparent=True)
     # Box plot
     plt.figure(figsize=(10, 6))
     sns.boxplot(data, color='#3FBFBF')
     plt.xticks(rotation=90)
     plt.title('Box plot', fontsize=25, fontweight=550, pad=20)
-    plt.savefig(graph_folder + new_names[2], transparent=True)
-    return new_names
+    plt.savefig(graph_loc[2], transparent=True)
+    return graph_names
 
 
 def descriptive_stats(random_sample):
