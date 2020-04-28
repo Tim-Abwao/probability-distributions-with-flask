@@ -45,7 +45,7 @@ tr:nth-child(even) {
 	border-radius: 15px;
 	padding: 3%;	
 	font-size: 80%;
-	margin-bottom: 8%;
+	margin: 8%;
 	font-style: italic;
 	text-align: left;
 }
@@ -54,4 +54,9 @@ img {
 }
 a {
 	color: teal;
+}
+footer {
+	margin-top: 10%;
+	position: relative;
+	bottom: 50px;
 }

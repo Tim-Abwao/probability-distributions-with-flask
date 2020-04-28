@@ -68,6 +68,7 @@
 				{% for i in range(num_params) %}
 					{{ (param_info[i])~': ' }} <span style="color: teal;"> {{ (parameters[i]) }} &emsp;</span><br>
 				{% endfor %}
+	</div>
 			<br>
 			<div class="graphs">
 				<img src="{{ url_for('static', filename= graphs[0] )}}">
@@ -81,7 +82,7 @@
 				<img src="{{ url_for('static', filename= graphs[1] )}}">
 				<p><a href="https://en.wikipedia.org/wiki/Violin_plot">Violin plots</a> are a cross between box plots and distribution plots.</p>
 			</div>
-
+	<div class="content">
 			<h3>Summary statistics</h3>
 			<!-- Displaying sample's summary statistics -->
 			{% for statistic in summary_stats %}
@@ -99,8 +100,10 @@
 				</table>
 			{% endif %}
 			<br>
-			<a href="{{ url_for('static', filename= 'files/'~sample_name) }}">Download Sample </a><br><br>
-			<a href="{{ url_for('index') }} " >Back to home page</a>
+			<footer>
+				<a href="{{ url_for('static', filename= 'files/'~sample_name) }}">Download Sample </a><br><br>
+				<a href="{{ url_for('index') }} " >Back to home page</a>
+			</footer>
 		{% endif %}
 
 	</div>
