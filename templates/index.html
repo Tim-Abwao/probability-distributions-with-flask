@@ -11,6 +11,8 @@
 		{% if show_intro %}   <!-- Toggle introductory statement -->
 			<h1>Statistical Distribution Sampler</h1>
 			<p>This is a simple web app to explore some useful <b>statistical distributions</b>, and showcase the functionality of some Python packages (Flask, SciPy, Pandas, Matplotlib and Seaborn, among others).</p>
+
+			<h3>How it works</h3>
 			<p>The idea is to enable anyone to: </p>
 			<ul> 
 				<li> get basic facts about a distribution </li>
@@ -34,14 +36,15 @@
 
 	<div class="content">
 		{% if chosen_distr %}
-			<h3>{{ 'Current selection: '~ chosen_distr ~ ' Distribution'}}</h3>
+			<h2>{{ 'Current selection: '~ chosen_distr ~ ' Distribution'}}</h2>
 			<!-- Displaying distribution information -->
 			{% for info in dist_summary %}
 				<p>{{ info }}</p>
 			{% endfor %}
-			<a style="color: teal;" href="{{ learn_more }}" target="_blank"> <i>learn more...</i></a><br>
+			
 			<!-- Collecting parameter input-->
 			{% if input_form %}
+			<a href="{{ learn_more }}" target="_blank"> <i>learn more...</i></a><br>
 				<p>Fill out the fields below to create a sample, and see see how it looks.</p>
 				<form action="{{ url_for('selection')}}" method="post">
 					{% for i in range(num_params) %}
@@ -66,17 +69,28 @@
 					{{ (param_info[i])~': ' }} <span style="color: teal;"> {{ (parameters[i]) }} &emsp;</span><br>
 				{% endfor %}
 			<br>
-			{% for graph in graphs %}
-				<img src="{{ url_for('static', filename= 'files/'~graph )}}" style="width:100%; ">
-			{% endfor %}
-			<br>
+			<div class="graphs">
+				<img src="{{ url_for('static', filename= graphs[0] )}}">
+				<p>Distribution plots show the <a href="https://en.wikipedia.org/wiki/Probability_distribution">probability distribution</a> of the random sample </p>
+			</div>
+			<div class="graphs">
+				<img src="{{ url_for('static', filename= graphs[2] )}}">
+				<p><a href="https://en.wikipedia.org/wiki/Box_plot">Box plots</a> show summary statistics such as the median, maximum, minimum and quartiles. They help detect outliers.</p>
+			</div>
+			<div class="graphs">
+				<img src="{{ url_for('static', filename= graphs[1] )}}">
+				<p><a href="https://en.wikipedia.org/wiki/Violin_plot">Violin plots</a> are a cross between box plots and distribution plots.</p>
+			</div>
+
+			<h3>Summary statistics</h3>
 			<!-- Displaying sample's summary statistics -->
 			{% for statistic in summary_stats %}
 				{{ statistic[0] }} <span style="color: teal;"> {{ statistic[1] }}</span><br>
 			{% endfor %}
 			<!-- Displaying preview as a table -->	
 			{% if preview %}
-				<h4>A Preview of the above {{chosen_distr}} random sample.</h4>
+			<br>
+				<h3>A Preview of the above {{chosen_distr}} random sample.</h3>
 				<table style="margin: auto;">
 					<tr><th></th><th>X</th></tr>
 					{% for i in preview %}
