@@ -1,60 +1,65 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<title>Statistical Distributions with Python</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css')}}">
 </head>
+
 <body style="background-image: url({{ url_for('static',filename='background.jpg') }}); ">
 	<div class="content" style="margin-top: 5%;">
-		{% if show_intro %}   <!-- Toggle introductory statement -->
-			<h1>Statistical Distribution Sampler</h1>
-			<p>This is a simple web app to explore some useful <b>statistical distributions</b>, and showcase the functionality of some Python packages (Flask, SciPy, Pandas, Matplotlib and Seaborn, among others).</p>
+		{% if show_intro %}
+		<!-- Toggle introductory statement -->
+		<h1>Statistical Distribution Sampler</h1>
+		<p>This is a simple web app to explore some useful <b>statistical distributions</b>, and showcase the
+			functionality of some Python packages (Flask, SciPy, Pandas, Matplotlib and Seaborn, among others).</p>
 
-			<h3>How it works</h3>
-			<p>The idea is to enable anyone to: </p>
-			<ul> 
-				<li> get basic facts about a distribution </li>
-				<li> specificy parameters of choice</li>
-				<li> generate a downloadable sample, and</li>
-				<li> view graphs and summary statistics. </li>
-			</ul>
-			<p>To give it a try, please select a distribution:</p>
+		<h3>How it works</h3>
+		<p>The idea is to enable anyone to: </p>
+		<ul>
+			<li> get basic facts about a distribution </li>
+			<li> specificy parameters of choice</li>
+			<li> generate a downloadable sample, and</li>
+			<li> view graphs and summary statistics. </li>
+		</ul>
+		<p>To give it a try, please select a distribution:</p>
 		{% endif %}
 
 		<!-- Distribution selection -->
 		<form action="{{ url_for('parameters')}}" method="post">
 			<select name='chosen_dist'>
 				{% for dist_name in range(tally) %}
-					<option value="{{ distributions[dist_name] }}">{{ distributions[dist_name]}}</option>
+				<option value="{{ distributions[dist_name] }}">{{ distributions[dist_name]}}</option>
 				{% endfor %}
 			</select>
-			<input class="button" type="submit" >
+			<input id="submit-dist" class="button" type="submit">
 		</form>
 	</div>
 
 	<div class="content">
 		{% if chosen_distr %}
-			<h2>{{ 'Current selection: '~ chosen_distr ~ ' Distribution'}}</h2>
-			<!-- Displaying distribution information -->
-			{% for info in dist_summary %}
-				<p>{{ info }}</p>
+		<h2>{{ 'Current selection: '~ chosen_distr ~ ' Distribution'}}</h2>
+		<!-- Displaying distribution information -->
+		{% for info in dist_summary %}
+		<p>{{ info }}</p>
+		{% endfor %}
+
+		<!-- Collecting parasubmitmeter input-->
+		{% if input_form %}
+		<a href="{{ learn_more }}" target="_blank"> <i>learn more...</i></a><br>
+		<p>Fill out the fields below to create a sample, and see see how it looks.</p>
+		<form action="{{ url_for('selection')}}" method="post">
+			{% for i in range(num_params) %}
+			{{ 'Parameter ' ~ (i+1) }}
+			<input type="number" name="{{ 'parameter ' ~ (i+1) }}" min="0" max="100000" step="0.001" required
+				placeholder="{{ param_info[i] }}"><br>
 			{% endfor %}
-			
-			<!-- Collecting parameter input-->
-			{% if input_form %}
-			<a href="{{ learn_more }}" target="_blank"> <i>learn more...</i></a><br>
-				<p>Fill out the fields below to create a sample, and see see how it looks.</p>
-				<form action="{{ url_for('selection')}}" method="post">
-					{% for i in range(num_params) %}
-						{{ 'Parameter ' ~ (i+1) }}
-						<input type="number" name="{{ 'parameter ' ~ (i+1) }}"  min="0" max="100000" step="0.001" required placeholder="{{ param_info[i] }}"><br>
-					{% endfor %}
-					Sample Size <input type="number" name="sample_size"  max="10000000" required><br>
-					<input class="button" type="submit" value="Submit" >
-				</form>
-			{% endif %}
+			Sample Size <input type="number" name="sample_size" max="10000000" required><br>
+			<input id="submit-params" class="button" type="submit" value="Submit">
+		</form>
+		{% endif %}
 
 		{% endif %}
 
@@ -63,49 +68,59 @@
 	<div class="content">
 		<!-- Displaying sample's graph and preview -->
 		{% if graphs %}
-			{{ 'Sample size: ' }} <span style="color: teal;"> {{sample_size}} &emsp;</span><br>
-				<!-- Display selected parameters -->
-				{% for i in range(num_params) %}
-					{{ (param_info[i])~': ' }} <span style="color: teal;"> {{ (parameters[i]) }} &emsp;</span><br>
-				{% endfor %}
+		{{ 'Sample size: ' }} <span style="color: teal;"> {{sample_size}} &emsp;</span><br>
+		<!-- Display selected parameters -->
+		{% for i in range(num_params) %}
+		{{ (param_info[i])~': ' }} <span style="color: teal;"> {{ (parameters[i]) }} &emsp;</span><br>
+		{% endfor %}
 	</div>
-			<br>
-			<div class="graphs">
-				<img src="{{ url_for('static', filename= graphs[0] )}}">
-				<p>Distribution plots show the <a href="https://en.wikipedia.org/wiki/Probability_distribution">probability distribution</a> of the random sample </p>
-			</div>
-			<div class="graphs">
-				<img src="{{ url_for('static', filename= graphs[2] )}}">
-				<p><a href="https://en.wikipedia.org/wiki/Box_plot">Box plots</a> show summary statistics such as the median, maximum, minimum and quartiles. They help detect outliers.</p>
-			</div>
-			<div class="graphs">
-				<img src="{{ url_for('static', filename= graphs[1] )}}">
-				<p><a href="https://en.wikipedia.org/wiki/Violin_plot">Violin plots</a> are a cross between box plots and distribution plots.</p>
-			</div>
+	<br>
+	<div class="graphs">
+		<img src="{{ url_for('static', filename= graphs[0] )}}">
+		<p>Distribution plots show the <a href="https://en.wikipedia.org/wiki/Probability_distribution">probability
+				distribution</a> of the random sample </p>
+	</div>
+	<div class="graphs">
+		<img src="{{ url_for('static', filename= graphs[2] )}}">
+		<p><a href="https://en.wikipedia.org/wiki/Box_plot">Box plots</a> show summary statistics such as the median,
+			maximum, minimum and quartiles. They help detect outliers.</p>
+	</div>
+	<div class="graphs">
+		<img src="{{ url_for('static', filename= graphs[1] )}}">
+		<p><a href="https://en.wikipedia.org/wiki/Violin_plot">Violin plots</a> are a cross between box plots and
+			distribution plots.</p>
+	</div>
 	<div class="content">
-			<h3>Summary statistics</h3>
-			<!-- Displaying sample's summary statistics -->
-			{% for statistic in summary_stats %}
-				{{ statistic[0] }} <span style="color: teal;"> {{ statistic[1] }}</span><br>
+		<h3>Summary statistics</h3>
+		<!-- Displaying sample's summary statistics -->
+		{% for statistic in summary_stats %}
+		{{ statistic[0] }} <span style="color: teal;"> {{ statistic[1] }}</span><br>
+		{% endfor %}
+		<!-- Displaying preview as a table -->
+		{% if preview %}
+		<br>
+		<h3>A Preview of the above {{chosen_distr}} random sample.</h3>
+		<table style="margin: auto;">
+			<tr>
+				<th></th>
+				<th>X</th>
+			</tr>
+			{% for i in preview %}
+			<tr>
+				<td>{{ i[0] }}</td>
+				<td>{{ i[1] }}</td>
+			</tr>
 			{% endfor %}
-			<!-- Displaying preview as a table -->	
-			{% if preview %}
-			<br>
-				<h3>A Preview of the above {{chosen_distr}} random sample.</h3>
-				<table style="margin: auto;">
-					<tr><th></th><th>X</th></tr>
-					{% for i in preview %}
-						<tr><td>{{ i[0] }}</td><td>{{ i[1] }}</td></tr>
-						{% endfor %}
-				</table>
-			{% endif %}
-			<br>
-			<footer>
-				<a href="{{ url_for('static', filename= 'files/'~sample_name) }}">Download Sample </a><br><br>
-				<a href="{{ url_for('index') }} " >Back to home page</a>
-			</footer>
+		</table>
+		{% endif %}
+		<br>
+		<footer>
+			<a href="{{ url_for('static', filename= 'files/'~sample_name) }}">Download Sample </a><br><br>
+			<a href="{{ url_for('index') }} ">Back to home page</a>
+		</footer>
 		{% endif %}
 
 	</div>
 </body>
+
 </html>
