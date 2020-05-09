@@ -1,1 +1,1 @@
-Binomial
+Chi-squared
