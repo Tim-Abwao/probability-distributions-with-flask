@@ -5,10 +5,10 @@
 	<title>Statistical Distributions with Python</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}">
 </head>
 
-<body style="background-image: url({{ url_for('static',filename='background.jpg') }}); ">
+<body style="background-image: url({{ url_for('static', filename='background.jpg') }}); ">
 	<div class="content" style="margin-top: 5%;">
 		{% if show_intro %}
 		<!-- Toggle introductory statement -->
@@ -17,6 +17,7 @@
 			functionality of some Python packages (Flask, SciPy, Pandas, Matplotlib and Seaborn, among others).</p>
 
 		<h3>How it works</h3>
+		<div style="text-align: left;">
 		<p>The idea is to enable anyone to: </p>
 		<ul>
 			<li> get basic facts about a distribution </li>
@@ -24,14 +25,16 @@
 			<li> generate a downloadable sample, and</li>
 			<li> view graphs and summary statistics. </li>
 		</ul>
+		</div>
 		<p>To give it a try, please select a distribution:</p>
 		{% endif %}
 
 		<!-- Distribution selection -->
 		<form action="{{ url_for('parameters')}}" method="post">
-			<select name='chosen_dist'>
-				{% for dist_name in range(tally) %}
-				<option value="{{ distributions[dist_name] }}">{{ distributions[dist_name]}}</option>
+			<label for="chosen_dist">Statistical Distribution: </label>
+			<select id="chosen_dist" name='chosen_dist'>
+				{% for dist_name in distributions.index %}
+				<option value="{{ dist_name }}">{{ dist_name }}</option>
 				{% endfor %}
 			</select>
 			<input id="submit-dist" class="button" type="submit">
@@ -42,21 +45,23 @@
 		{% if chosen_distr %}
 		<h2>{{ 'Current selection: '~ chosen_distr ~ ' Distribution'}}</h2>
 		<!-- Displaying distribution information -->
-		{% for info in dist_summary %}
+		{% for info in distributions.loc[chosen_distr]["summary"].split("|") %}
 		<p>{{ info }}</p>
 		{% endfor %}
 
 		<!-- Collecting parasubmitmeter input-->
 		{% if input_form %}
-		<a href="{{ learn_more }}" target="_blank"> <i>learn more...</i></a><br>
+		<a href="{{ dist_info['wiki_link'] }}" target="_blank"> <i>learn more...</i></a><br>
 		<p>Fill out the fields below to create a sample, and see see how it looks.</p>
 		<form action="{{ url_for('selection')}}" method="post">
-			{% for i in range(num_params) %}
-			{{ 'Parameter ' ~ (i+1) }}
-			<input type="number" name="{{ 'parameter ' ~ (i+1) }}" min="0" max="100000" step="0.001" required
-				placeholder="{{ param_info[i] }}"><br>
+			{% for i in range(dist_info["no_of_parameters"]) %}
+			<label for="{{ 'parameter ' ~ (i+1) }}">{{ 'parameter ' ~ (i+1) }}</label>
+			<input id="{{ 'parameter ' ~ (i+1) }}" type="number" name="{{ 'parameter ' ~ (i+1) }}" min="0" max="100000" step="0.001" required
+				placeholder="{{ dist_info['parameter_info'].split(',')[i] }}"><br>
 			{% endfor %}
-			Sample Size <input type="number" name="sample_size" max="10000000" required><br>
+			<label for="sample_size">Sample Size</label>
+			<input id="sample_size" type="number" name="sample_size" max="10000000" required><br>
+
 			<input id="submit-params" class="button" type="submit" value="Submit">
 		</form>
 		{% endif %}
@@ -70,8 +75,8 @@
 		{% if graphs %}
 		{{ 'Sample size: ' }} <span style="color: teal;"> {{sample_size}} &emsp;</span><br>
 		<!-- Display selected parameters -->
-		{% for i in range(num_params) %}
-		{{ (param_info[i])~': ' }} <span style="color: teal;"> {{ (parameters[i]) }} &emsp;</span><br>
+		{% for i in range(dist_info["no_of_parameters"]) %}
+		{{ (dist_info['parameter_info'].split(',')[i])~': ' }} <span style="color: teal;"> {{ (parameters[i]) }} &emsp;</span><br>
 		{% endfor %}
 	</div>
 	<br>
@@ -105,10 +110,10 @@
 				<th></th>
 				<th>X</th>
 			</tr>
-			{% for i in preview %}
+			{% for index, value in preview %}
 			<tr>
-				<td>{{ i[0] }}</td>
-				<td>{{ i[1] }}</td>
+				<td>{{ index + 1 }}</td>
+				<td>{{ value }}</td>
 			</tr>
 			{% endfor %}
 		</table>
