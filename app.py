@@ -9,6 +9,7 @@ from handy_functions import (
     descriptive_stats,
     validate_probability,
     clear_old_files,
+    floatInt_to_int
 )
 
 app = Flask(__name__)
@@ -62,7 +63,7 @@ def selection():
         dist_info = distribution_data.loc[chosen_distr]
         # obtaining parameters
         parameters = [
-            float(request.form["parameter " + str(i + 1)])
+            floatInt_to_int(float(request.form["parameter " + str(i + 1)]))
             for i in range(dist_info["no_of_parameters"])
         ]
         # ensuring 0<=p<=1 for affected distributions

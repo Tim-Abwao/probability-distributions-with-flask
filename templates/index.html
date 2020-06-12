@@ -49,7 +49,7 @@
 		<p>{{ info }}</p>
 		{% endfor %}
 
-		<!-- Collecting parasubmitmeter input-->
+		<!-- Collecting parameter input-->
 		{% if input_form %}
 		<a href="{{ dist_info['wiki_link'] }}" target="_blank"> <i>learn more...</i></a><br>
 		<p>Fill out the fields below to create a sample, and see see how it looks.</p>
@@ -73,10 +73,12 @@
 	<div class="content">
 		<!-- Displaying sample's graph and preview -->
 		{% if graphs %}
-		{{ 'Sample size: ' }} <span style="color: teal;"> {{sample_size}} &emsp;</span><br>
+		<span><em>{{ 'Sample size: ' }}</em></span> 
+		<span style="color: teal;"> {{sample_size}} &emsp;</span><br>
 		<!-- Display selected parameters -->
 		{% for i in range(dist_info["no_of_parameters"]) %}
-		{{ (dist_info['parameter_info'].split(',')[i])~': ' }} <span style="color: teal;"> {{ (parameters[i]) }} &emsp;</span><br>
+		<span><em>{{ (dist_info['parameter_info'].split(',')[i])~': ' }}</em></span>
+		<span style="color: teal;"> {{ (parameters[i]) }} &emsp;</span><br>
 		{% endfor %}
 	</div>
 	<br>
@@ -99,7 +101,8 @@
 		<h3>Summary statistics</h3>
 		<!-- Displaying sample's summary statistics -->
 		{% for statistic in summary_stats %}
-		{{ statistic[0] }} <span style="color: teal;"> {{ statistic[1] }}</span><br>
+		<span><em>{{ statistic[0] }}</em></span> 
+		<span style="color: teal;"> {{ statistic[1] }}</span><br>
 		{% endfor %}
 		<!-- Displaying preview as a table -->
 		{% if preview %}

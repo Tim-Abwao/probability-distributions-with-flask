@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# coding: utf-8
-
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
@@ -31,10 +28,7 @@ def validate_probability(p):
     Ensures probabilities stick to the range 0<=p<=1 by assigning a default
     value of p=0.5 for entries greater than 1
     """
-    if 0 <= p <= 1:
-        return p
-    else:
-        return 0.5
+    return p if 0 <= p <= 1 else 0.5
 
 
 def get_random_sample(distribution, size, parameters):
@@ -106,10 +100,10 @@ def get_graphs(data):
     clear_old_files("png")
     # create time-stamped names for the graph image
     graph_names = [
-        "files/" + str(datetime.now()) + f"_{i}.png"
-        for i in ["distplot", "violinplot", "boxplot"]
+        "files/" + str(datetime.now()) + f"_{kind}.png"
+        for kind in ["distplot", "violinplot", "boxplot"]
     ]
-    graph_loc = ["static/" + i for i in graph_names]
+    graph_loc = ["static/" + name for name in graph_names]
     sns.set()
     # Distribution plot
     plt.figure(figsize=(10, 6))
@@ -129,7 +123,15 @@ def get_graphs(data):
     plt.xticks(rotation=90)
     plt.title("Box plot", fontsize=25, fontweight=550, pad=20)
     plt.savefig(graph_loc[2], transparent=True)
+
     return graph_names
+
+
+def floatInt_to_int(x):
+    """
+    Converts float values with zero fractional parts into integers
+    """
+    return int(x) if x % 1 == 0 else x
 
 
 def descriptive_stats(random_sample):
@@ -137,20 +139,20 @@ def descriptive_stats(random_sample):
     Returns basic descriptive statistics for the random sample
     """
     try:
-        _mean = round(mean(random_sample), 4)
-        _median = round(median(random_sample), 4)
+        _mean = floatInt_to_int(round(mean(random_sample), 4))
+        _median = floatInt_to_int(round(median(random_sample), 4))
     except ValueError:
         _median = _mean = "No data to process."
 
     try:
-        std = round(stdev(random_sample), 4)
-        _min = round(min(random_sample), 4)
-        _max = round(max(random_sample), 4)
+        std = floatInt_to_int(round(stdev(random_sample), 4))
+        _min = floatInt_to_int(round(min(random_sample), 4))
+        _max = floatInt_to_int(round(max(random_sample), 4))
     except ValueError:
         std = _min = _max = "Not available. At least 2 data points required."
 
     try:
-        _mode = round(mode(random_sample), 4)
+        _mode = floatInt_to_int(round(mode(random_sample), 4))
     except ValueError:
         _mode = "No unique mode."
 
