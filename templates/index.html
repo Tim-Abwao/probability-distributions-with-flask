@@ -37,7 +37,7 @@
 				<option value="{{ dist_name }}">{{ dist_name }}</option>
 				{% endfor %}
 			</select>
-			<input id="submit-dist" class="button" type="submit">
+			<input id="submit-dist" class="button" type="submit" value="Submit">
 		</form>
 	</div>
 
@@ -56,11 +56,11 @@
 		<form action="{{ url_for('selection')}}" method="post">
 			{% for i in range(dist_info["no_of_parameters"]) %}
 			<label for="{{ 'parameter ' ~ (i+1) }}">{{ 'parameter ' ~ (i+1) }}</label>
-			<input id="{{ 'parameter ' ~ (i+1) }}" type="number" name="{{ 'parameter ' ~ (i+1) }}" min="0" max="100000" step="0.001" required
+			<input id="{{ 'parameter ' ~ (i+1) }}" type="number" name="{{ 'parameter ' ~ (i+1) }}" min="0" max="1000" step="0.001" required
 				placeholder="{{ dist_info['parameter_info'].split(',')[i] }}"><br>
 			{% endfor %}
 			<label for="sample_size">Sample Size</label>
-			<input id="sample_size" type="number" name="sample_size" max="10000000" required><br>
+			<input id="sample_size" type="number" name="sample_size" max="500000" required><br>
 
 			<input id="submit-params" class="button" type="submit" value="Submit">
 		</form>
