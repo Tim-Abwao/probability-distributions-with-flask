@@ -1,1 +1,1 @@
-Poisson
+Chi-squared

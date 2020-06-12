@@ -22,11 +22,10 @@ input  {
 		background: teal;
 		padding: 7px 20px;
 		width: 150px;
+		color: white;
 	}
 .button:hover{
-		color: white;
-		background: black;
-		border: 2px solid black;
+		background: darkslategray;
 	}
 .content {
 		margin: 2% 10%;
