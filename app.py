@@ -74,7 +74,7 @@ def selection():
 
         # creating and processing the sample
         random_sample = get_random_sample(chosen_distr, sample_size,
-                                          parameters)
+                                          *parameters)
         graphs = get_graphs(random_sample)
         summary_stats = descriptive_stats(random_sample)
         sample_data = pd.Series(random_sample,

@@ -22,6 +22,24 @@ from scipy.stats import (
     nbinom,
 )
 
+distributions = {
+    "Normal": norm,
+    "Poisson": poisson,
+    "Bernoulli": bernoulli,
+    "Uniform": uniform,
+    "Geometric": geom,
+    "Alpha": alpha,
+    "Beta": beta,
+    "Chi-squared": chi2,
+    "Exponential": expon,
+    "F": f,
+    "Gamma": gamma,
+    "Pareto": pareto,
+    "Student t": t,
+    "Binomial": binom,
+    "Negative Binomial":  nbinom
+}
+
 
 def validate_probability(p):
     """
@@ -31,59 +49,15 @@ def validate_probability(p):
     return p if 0 <= p <= 1 else 0.5
 
 
-def get_random_sample(distribution, size, parameters):
+def get_random_sample(distribution, size, *parameters):
     """
     Returns a random sample of size {size} with the given {parameters},
     for the specified {distribution}.
     """
-    params = list(parameters)
-
-    if distribution == "Normal":
-        return norm.rvs(params[0], params[1], size=size)
-
-    if distribution == "Poisson":
-        return poisson.rvs(params[0], size=size)
-
-    if distribution == "Bernoulli":
-        return bernoulli.rvs(params[0], size=size)
-
-    if distribution == "Uniform":
-        return uniform.rvs(params[0], params[1], size=size)
-
-    if distribution == "Geometric":
-        return geom.rvs(params[0], size=size)
-
-    if distribution == "Alpha":
-        return alpha.rvs(params[0], size=size)
-
-    if distribution == "Beta":
-        return beta.rvs(params[0], params[1], size=size)
-
-    if distribution == "Chi-squared":
-        return chi2.rvs(params[0], size=size)
-
-    if distribution == "Exponential":
-        return expon.rvs(params[0], size=size)
-
-    if distribution == "F":
-        return f.rvs(params[0], params[1], size=size)
-
-    if distribution == "Gamma":
-        return gamma.rvs(params[0], size=size)
-
-    if distribution == "Pareto":
-        return pareto.rvs(params[0], size=size)
-
-    if distribution == "Student t":
-        return t.rvs(params[0], size=size)
-
-    if distribution == "Binomial":
-        return binom.rvs(round(params[0]), params[1], size=size)
-
-    if distribution == "Negative Binomial":
-        return nbinom.rvs(round(params[0]), params[1], size=size)
-
-    return 1
+    try:
+        return distributions[distribution].rvs(*parameters, size=size)
+    except KeyError:
+        return 1
 
 
 def clear_old_files(extension):
@@ -164,3 +138,7 @@ def descriptive_stats(random_sample):
         ("Minimum: ", _min),
         ("Maximum: ", _max),
     ]
+
+
+if __name__ == '__main__':
+    print(get_random_sample('F', 100, *[1, 2]))
