@@ -1,50 +1,27 @@
-body { 
-		max-width: 1000px; 
-		text-align: center; 
-		margin: auto; 
-		font-size: 1.35em;
-	}
-select {
-		padding: 10px 70px;
-		background: inherit;
-		box-shadow: 4px 4px 8px teal;
-		border-radius: 10px;
-		margin: 20px;
-	}
-input  {
-		padding: 10px ;
-		box-shadow: 4px 4px 8px teal;
-		border-radius: 10px;
-		margin: 20px;
-		width: 220px; 
-	}
+
 .button {
-		background: teal;
-		padding: 7px 20px;
-		width: 150px;
-		color: white;
-	}
+	background: teal;
+	padding: 7px 20px;
+	width: 150px;
+	color: white;
+}
 .button:hover{
-		background: darkslategray;
-	}
-.content {
-		margin: 2% 10%;
-	}
+	background: darkslategray;
+}
 table, th, td {
-		border: 1px solid black;
-		border: none;
-	    padding: 10px;
-		width: 50%;
-	}
+	border: none;
+	padding: 10px;
+	width: 40%;
+}
 tr:nth-child(even) {
-		  background-color: rgb(0, 128, 128,0.4);
-		}
+	background-color: rgb(0, 128, 128,0.4);
+}
 .graphs {
 	border: 2px solid teal;
 	border-radius: 15px;
-	padding: 3%;	
-	font-size: 80%;
-	margin: 8%;
+	padding: 3%;
+	font-size: 75%;
+	margin: 8% 0%;
 	font-style: italic;
 	text-align: left;
 }
