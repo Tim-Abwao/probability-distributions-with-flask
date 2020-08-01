@@ -6,18 +6,50 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}">
+	<style>
+		body {
+			background-image: url("{{ url_for('static', filename='background.jpg') }}");
+			max-width: 65%;
+			margin: auto;
+			font-size: 1.32em;
+			text-align: center;
+			font-family: Georgia, serif;
+		}
+
+		@media screen and (max-width: 768px) {
+			body {
+				max-width: 80%;
+			}
+		}
+
+		h1,
+		h2 {
+			text-align: center;
+		}
+
+		.content {
+			text-align: left;
+		}
+
+		select,
+		input {
+			padding: 10px;
+			box-shadow: 4px 4px 8px teal;
+			border-radius: 10px;
+			margin: 20px;
+			width: 220px;
+		}
+	</style>
 </head>
 
-<body style="background-image: url({{ url_for('static', filename='background.jpg') }}); ">
-	<div class="content" style="margin-top: 5%;">
+<body>
+	<div class="content">
 		{% if show_intro %}
 		<!-- Toggle introductory statement -->
 		<h1>Statistical Distribution Sampler</h1>
 		<p>This is a simple web app to explore some useful <b>statistical distributions</b>, and showcase the
 			functionality of some Python packages (Flask, SciPy, Pandas, Matplotlib and Seaborn, among others).</p>
 
-		<h3>How it works</h3>
-		<div style="text-align: left;">
 		<p>The idea is to enable anyone to: </p>
 		<ul>
 			<li> get basic facts about a distribution </li>
@@ -25,7 +57,7 @@
 			<li> generate a downloadable sample, and</li>
 			<li> view graphs and summary statistics. </li>
 		</ul>
-		</div>
+
 		<p>To give it a try, please select a distribution:</p>
 		{% endif %}
 
@@ -41,14 +73,15 @@
 		</form>
 	</div>
 
-	<div class="content">
+	<div>
 		{% if chosen_distr %}
 		<h2>{{ 'Current selection: '~ chosen_distr ~ ' Distribution'}}</h2>
 		<!-- Displaying distribution information -->
-		{% for info in distributions.loc[chosen_distr]["summary"].split("|") %}
-		<p>{{ info }}</p>
-		{% endfor %}
-
+		<div class="content">
+			{% for info in distributions.loc[chosen_distr]["summary"].split("|") %}
+			<p>{{ info }}</p>
+			{% endfor %}
+		</div>
 		<!-- Collecting parameter input-->
 		{% if input_form %}
 		<a href="{{ dist_info['wiki_link'] }}" target="_blank"> <i>learn more...</i></a><br>
@@ -56,8 +89,8 @@
 		<form action="{{ url_for('selection')}}" method="post">
 			{% for i in range(dist_info["no_of_parameters"]) %}
 			<label for="{{ 'parameter ' ~ (i+1) }}">{{ 'parameter ' ~ (i+1) }}</label>
-			<input id="{{ 'parameter ' ~ (i+1) }}" type="number" name="{{ 'parameter ' ~ (i+1) }}" min="0" max="1000" step="0.001" required
-				placeholder="{{ dist_info['parameter_info'].split(',')[i] }}"><br>
+			<input id="{{ 'parameter ' ~ (i+1) }}" type="number" name="{{ 'parameter ' ~ (i+1) }}" min="0" max="1000"
+				step="0.001" required placeholder="{{ dist_info['parameter_info'].split(',')[i] }}"><br>
 			{% endfor %}
 			<label for="sample_size">Sample Size</label>
 			<input id="sample_size" type="number" name="sample_size" max="500000" required><br>
@@ -70,10 +103,10 @@
 
 	</div>
 
-	<div class="content">
+	<div>
 		<!-- Displaying sample's graph and preview -->
 		{% if graphs %}
-		<span><em>{{ 'Sample size: ' }}</em></span> 
+		<span><em>{{ 'Sample size: ' }}</em></span>
 		<span style="color: teal;"> {{sample_size}} &emsp;</span><br>
 		<!-- Display selected parameters -->
 		{% for i in range(dist_info["no_of_parameters"]) %}
@@ -97,11 +130,11 @@
 		<p><a href="https://en.wikipedia.org/wiki/Violin_plot">Violin plots</a> are a cross between box plots and
 			distribution plots.</p>
 	</div>
-	<div class="content">
+	<div>
 		<h3>Summary statistics</h3>
 		<!-- Displaying sample's summary statistics -->
 		{% for statistic in summary_stats %}
-		<span><em>{{ statistic[0] }}</em></span> 
+		<span><em>{{ statistic[0] }}</em></span>
 		<span style="color: teal;"> {{ statistic[1] }}</span><br>
 		{% endfor %}
 		<!-- Displaying preview as a table -->
