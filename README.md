@@ -2,32 +2,36 @@
 
 A simple app to learn something about several popular and useful statistical distributions.
 
-Powered by [Flask](https://palletsprojects.com/p/flask/), [Pandas](https://pandas.pydata.org), [SciPy](https://www.scipy.org) and [Seaborn](https://seaborn.pydata.org). The application is live [here](https://statistics-distributions.herokuapp.com).
+Powered by [Flask][1], [Pandas][2], [SciPy][3] and [Seaborn][4]. The application is live [here][5].
 
 ## Getting Started
 
 - Download the files, create a virtual environment, and activate it:
 
-```bash
-git clone https://github.com/Tim-Abwao/statistical-distributions-flask.git
-cd statistical-distributions-flask
-python3 -m venv venv
-source venv/bin/activate
-```
+    ```bash
+    git clone https://github.com/Tim-Abwao/statistical-distributions-flask.git
+    cd statistical-distributions-flask
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
 
 - Install the required packages:
 
-```bash
-pip install -U pip
-pip install -r requirements.txt
-```
+    ```bash
+    pip install -U pip
+    pip install -r requirements.txt
+    ```
 
 - There are various ways to run the application. A simple one is:
 
-```bash
-python app.py
-```
+    ```bash
+    python app.py
+    ```
 
-Head on to [localhost:5000](http://127.0.0.1:5000).
+Then browse to <http://127.0.0.1:5000>. That's all, enjoy.
 
-That's all. Enjoy.
+[1]: https://palletsprojects.com/p/flask/
+[2]: https://pandas.pydata.org
+[3]: https://www.scipy.org
+[4]: https://seaborn.pydata.org
+[5]: https://statistics-distributions.herokuapp.com
