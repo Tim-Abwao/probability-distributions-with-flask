@@ -16,12 +16,6 @@
 			font-family: Georgia, serif;
 		}
 
-		@media screen and (max-width: 768px) {
-			body {
-				max-width: 80%;
-			}
-		}
-
 		h1,
 		h2 {
 			text-align: center;
@@ -38,6 +32,60 @@
 			border-radius: 10px;
 			margin: 20px;
 			width: 220px;
+			background-color: white;
+		}
+
+		.button {
+			background: teal;
+			padding: 7px 20px;
+			width: 150px;
+			color: white;
+		}
+
+		.button:hover {
+			background: darkslategray;
+		}
+
+		table,
+		th,
+		td {
+			border: none;
+			padding: 10px;
+			width: 40%;
+		}
+
+		tr:nth-child(even) {
+			background-color: rgb(0, 128, 128, 0.4);
+		}
+
+		.graphs {
+			border: 2px solid teal;
+			border-radius: 15px;
+			padding: 3%;
+			font-size: 75%;
+			margin: 8% 0%;
+			font-style: italic;
+			text-align: left;
+		}
+
+		img {
+			width: 100%;
+		}
+
+		a {
+			color: teal;
+		}
+
+		footer {
+			margin-top: 10%;
+			position: relative;
+			bottom: 50px;
+		}
+
+		@media screen and (max-width: 768px) {
+			body {
+				max-width: 80%;
+			}
 		}
 	</style>
 </head>
@@ -65,8 +113,8 @@
 		<form action="{{ url_for('parameters')}}" method="post">
 			<label for="chosen_dist">Statistical Distribution: </label>
 			<select id="chosen_dist" name='chosen_dist'>
-				{% for dist_name in distributions.index %}
-				<option value="{{ dist_name }}">{{ dist_name }}</option>
+				{% for distribution in data['distributions'].index %}
+				<option value="{{ distribution }}">{{ distribution }}</option>
 				{% endfor %}
 			</select>
 			<input id="submit-dist" class="button" type="submit" value="Submit">
@@ -74,23 +122,23 @@
 	</div>
 
 	<div>
-		{% if chosen_distr %}
-		<h2>{{ 'Current selection: '~ chosen_distr ~ ' Distribution'}}</h2>
+		{% if data['chosen_dist'] %}
+		<h2>{{ 'Current selection: '~ data['chosen_dist'] ~ ' Distribution'}}</h2>
 		<!-- Displaying distribution information -->
 		<div class="content">
-			{% for info in distributions.loc[chosen_distr]["summary"].split("|") %}
+			{% for info in data['dist_info']['summary'].split('|') %}
 			<p>{{ info }}</p>
 			{% endfor %}
+			<a href="{{ data['dist_info']['wiki_link'] }}" target="_blank"> <i>learn more...</i></a><br>
 		</div>
 		<!-- Collecting parameter input-->
-		{% if input_form %}
-		<a href="{{ dist_info['wiki_link'] }}" target="_blank"> <i>learn more...</i></a><br>
+		{% if _form %}
 		<p>Fill out the fields below to create a sample, and see see how it looks.</p>
 		<form action="{{ url_for('selection')}}" method="post">
-			{% for i in range(dist_info["no_of_parameters"]) %}
+			{% for i in range(data['dist_info']['no_of_parameters']) %}
 			<label for="{{ 'parameter ' ~ (i+1) }}">{{ 'parameter ' ~ (i+1) }}</label>
 			<input id="{{ 'parameter ' ~ (i+1) }}" type="number" name="{{ 'parameter ' ~ (i+1) }}" min="0" max="1000"
-				step="0.001" required placeholder="{{ dist_info['parameter_info'].split(',')[i] }}"><br>
+				step="0.001" required placeholder="{{ data['dist_info']['parameter_info'].split(',')[i] }}"><br>
 			{% endfor %}
 			<label for="sample_size">Sample Size</label>
 			<input id="sample_size" type="number" name="sample_size" max="500000" required><br>
@@ -104,49 +152,48 @@
 	</div>
 
 	<div>
-		<!-- Displaying sample's graph and preview -->
-		{% if graphs %}
+		<!-- Displaying sample's graphs and preview -->
+		{% if data['graphs'] %}
 		<span><em>{{ 'Sample size: ' }}</em></span>
-		<span style="color: teal;"> {{sample_size}} &emsp;</span><br>
+		<span style="color: teal;"> {{data['sample_size']}} &emsp;</span><br>
 		<!-- Display selected parameters -->
-		{% for i in range(dist_info["no_of_parameters"]) %}
-		<span><em>{{ (dist_info['parameter_info'].split(',')[i])~': ' }}</em></span>
-		<span style="color: teal;"> {{ (parameters[i]) }} &emsp;</span><br>
+		{% for i in range(data['dist_info']["no_of_parameters"]) %}
+		<span><em>{{ (data['dist_info']['parameter_info'].split(',')[i])~': ' }}</em></span>
+		<span style="color: teal;"> {{ (data['parameters'][i]) }} &emsp;</span><br>
 		{% endfor %}
 	</div>
 	<br>
 	<div class="graphs">
-		<img src="{{ url_for('static', filename= graphs[0] )}}">
+		<img src="{{ url_for('static', filename=data['graphs'][0] )}}">
 		<p>Distribution plots show the <a href="https://en.wikipedia.org/wiki/Probability_distribution">probability
 				distribution</a> of the random sample </p>
 	</div>
 	<div class="graphs">
-		<img src="{{ url_for('static', filename= graphs[2] )}}">
+		<img src="{{ url_for('static', filename=data['graphs'][2] )}}">
 		<p><a href="https://en.wikipedia.org/wiki/Box_plot">Box plots</a> show summary statistics such as the median,
 			maximum, minimum and quartiles. They help detect outliers.</p>
 	</div>
 	<div class="graphs">
-		<img src="{{ url_for('static', filename= graphs[1] )}}">
+		<img src="{{ url_for('static', filename=data['graphs'][1] )}}">
 		<p><a href="https://en.wikipedia.org/wiki/Violin_plot">Violin plots</a> are a cross between box plots and
 			distribution plots.</p>
 	</div>
 	<div>
 		<h3>Summary statistics</h3>
-		<!-- Displaying sample's summary statistics -->
-		{% for statistic in summary_stats %}
+		{% for statistic in data['summary_stats'] %}
 		<span><em>{{ statistic[0] }}</em></span>
 		<span style="color: teal;"> {{ statistic[1] }}</span><br>
 		{% endfor %}
-		<!-- Displaying preview as a table -->
-		{% if preview %}
+
+		{% if preview.any() %}
 		<br>
-		<h3>A Preview of the above {{chosen_distr}} random sample.</h3>
+		<h3>A Preview of the above {{ data['chosen_dist'] }} random sample.</h3>
 		<table style="margin: auto;">
 			<tr>
 				<th></th>
 				<th>X</th>
 			</tr>
-			{% for index, value in preview %}
+			{% for index, value in preview.iteritems() %}
 			<tr>
 				<td>{{ index + 1 }}</td>
 				<td>{{ value }}</td>
