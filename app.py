@@ -9,7 +9,7 @@ from handy_functions import (
     descriptive_stats,
     validate_probability,
     clear_old_files,
-    floatInt_to_int
+    Int_float
 )
 from collections import defaultdict
 
@@ -52,10 +52,9 @@ def selection():
 
         # extracting form data
         data['sample_size'] = int(request.form["sample_size"])
-        data['parameters'] = [floatInt_to_int(
-            float(request.form["parameter " + str(i + 1)]))
-                for i in range(data['dist_info']["no_of_parameters"])
-            ]
+        data['parameters'] = \
+            [Int_float(float(request.form[f"parameter {i + 1}"]))
+             for i in range(data['dist_info']["no_of_parameters"])]
         # ensuring 0<=p<=1 for affected distributions
         if data['chosen_dist'] in {"Negative Binomial", "Binomial",
                                    "Geometric", "Bernoulli"}:

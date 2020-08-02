@@ -3,7 +3,7 @@ from seaborn import boxplot, distplot, violinplot
 import os
 import glob
 from datetime import datetime
-from statistics import mean, median, stdev, mode
+from statistics import median, mode
 from scipy.stats import (
     norm,
     poisson,
@@ -94,40 +94,26 @@ def get_graphs(data):
     return graphs
 
 
-def floatInt_to_int(x):
+def Int_float(x):
     """
     Converts float values with zero fractional parts into integers
     """
     return int(x) if x % 1 == 0 else x
 
 
-def descriptive_stats(random_sample):
+def descriptive_stats(data):
     """
     Returns basic descriptive statistics for the random sample
     """
+    stats = {'Mean': data.mean(),
+             'Median': median(data),
+             'Standard Deviation': data.std(),
+             'Minimum': data.min(),
+             'Maximum': data.max()
+             }
     try:
-        _mean = floatInt_to_int(round(mean(random_sample), 4))
-        _median = floatInt_to_int(round(median(random_sample), 4))
+        stats['Mode'] = mode(data)
     except ValueError:
-        _median = _mean = "No data to process."
+        stats['Mode'] = "No unique mode."
 
-    try:
-        std = floatInt_to_int(round(stdev(random_sample), 4))
-        _min = floatInt_to_int(round(min(random_sample), 4))
-        _max = floatInt_to_int(round(max(random_sample), 4))
-    except ValueError:
-        std = _min = _max = "Not available. At least 2 data points required."
-
-    try:
-        _mode = floatInt_to_int(round(mode(random_sample), 4))
-    except ValueError:
-        _mode = "No unique mode."
-
-    return [
-        ("Mean: ", _mean),
-        ("Median: ", _median),
-        ("Mode: ", _mode),
-        ("Standard Deviation: ", std),
-        ("Minimum: ", _min),
-        ("Maximum: ", _max),
-    ]
+    return {key: Int_float(round(value, 4)) for key, value in stats.items()}
