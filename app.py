@@ -33,6 +33,7 @@ def parameters():
         # extracting form data
         data['chosen_dist'] = request.form["chosen_dist"]
         data['dist_info'] = data['distributions'].loc[data['chosen_dist']]
+        data['graphs'] = None
         input_form = True
         if data['chosen_dist'] == "Please Select":
             input_form = False

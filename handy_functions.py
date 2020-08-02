@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-import seaborn as sns
+from seaborn import boxplot, distplot, violinplot
 import os
 import glob
 from datetime import datetime
@@ -49,6 +49,12 @@ def validate_probability(p):
     return p if 0 <= p <= 1 else 0.5
 
 
+def clear_old_files(extension):
+    old_files = glob.glob("static/files/*." + extension, recursive=True)
+    for file in old_files:
+        os.remove(file)
+
+
 def get_random_sample(distribution, size, *parameters):
     """
     Returns a random sample of size {size} with the given {parameters},
@@ -60,10 +66,18 @@ def get_random_sample(distribution, size, *parameters):
         return 1
 
 
-def clear_old_files(extension):
-    old_files = glob.glob("static/files/*." + extension, recursive=True)
-    for file in old_files:
-        os.remove(file)
+def plot_graph(graph_type, data, title):
+    """
+    Plots the required {graph_type} using the {data}, saves it, and returns
+    its name.
+    """
+    plt.figure(figsize=(10, 6))
+    graph_type(data, color="#3FBFBF")
+    plt.xticks(rotation=90)
+    plt.title(title, fontsize=25, fontweight=550, pad=20)
+    graph_name = f"files/{str(datetime.now())}_{title.split()[0]}.png"
+    plt.savefig(f'static/{graph_name}', transparent=True)
+    return graph_name
 
 
 def get_graphs(data):
@@ -73,32 +87,11 @@ def get_graphs(data):
     # clear old graphs
     clear_old_files("png")
     # create time-stamped names for the graph image
-    graph_names = [
-        "files/" + str(datetime.now()) + f"_{kind}.png"
-        for kind in ["distplot", "violinplot", "boxplot"]
-    ]
-    graph_loc = ["static/" + name for name in graph_names]
-    sns.set()
-    # Distribution plot
-    plt.figure(figsize=(10, 6))
-    sns.distplot(data, color="teal")
-    plt.xticks(rotation=90)
-    plt.title("Distribution plot", fontsize=25, fontweight=550, pad=20)
-    plt.savefig(graph_loc[0], transparent=True)
-    # Violin plot
-    plt.figure(figsize=(10, 6))
-    sns.violinplot(data, color="#3FBFBF")
-    plt.xticks(rotation=90)
-    plt.title("Violin plot", fontsize=25, fontweight=550, pad=20)
-    plt.savefig(graph_loc[1], transparent=True)
-    # Box plot
-    plt.figure(figsize=(10, 6))
-    sns.boxplot(data, color="#3FBFBF")
-    plt.xticks(rotation=90)
-    plt.title("Box plot", fontsize=25, fontweight=550, pad=20)
-    plt.savefig(graph_loc[2], transparent=True)
-
-    return graph_names
+    graphs = {'distplot': plot_graph(distplot, data, "Distribution Plot"),
+              'boxplot': plot_graph(boxplot, data, "Box Plot"),
+              'violinplot': plot_graph(violinplot, data, "Violin Plot")
+              }
+    return graphs
 
 
 def floatInt_to_int(x):
@@ -138,7 +131,3 @@ def descriptive_stats(random_sample):
         ("Minimum: ", _min),
         ("Maximum: ", _max),
     ]
-
-
-if __name__ == '__main__':
-    print(get_random_sample('F', 100, *[1, 2]))

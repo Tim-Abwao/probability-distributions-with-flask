@@ -164,17 +164,17 @@
 	</div>
 	<br>
 	<div class="graphs">
-		<img src="{{ url_for('static', filename=data['graphs'][0] )}}">
+		<img src="{{ url_for('static', filename=data['graphs']['distplot'] )}}">
 		<p>Distribution plots show the <a href="https://en.wikipedia.org/wiki/Probability_distribution">probability
 				distribution</a> of the random sample </p>
 	</div>
 	<div class="graphs">
-		<img src="{{ url_for('static', filename=data['graphs'][2] )}}">
+		<img src="{{ url_for('static', filename=data['graphs']['boxplot'] )}}">
 		<p><a href="https://en.wikipedia.org/wiki/Box_plot">Box plots</a> show summary statistics such as the median,
 			maximum, minimum and quartiles. They help detect outliers.</p>
 	</div>
 	<div class="graphs">
-		<img src="{{ url_for('static', filename=data['graphs'][1] )}}">
+		<img src="{{ url_for('static', filename=data['graphs']['violinplot'] )}}">
 		<p><a href="https://en.wikipedia.org/wiki/Violin_plot">Violin plots</a> are a cross between box plots and
 			distribution plots.</p>
 	</div>
