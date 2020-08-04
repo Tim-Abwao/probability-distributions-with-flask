@@ -43,23 +43,27 @@ distributions = {
 
 def validate_probability(p):
     """
-    Ensures probabilities stick to the range 0<=p<=1 by assigning a default
-    value of p=0.5 for entries greater than 1
+    Ensures that probabilities are in the range 0 <= p <= 1, or else assigns
+    a default value of 0.5 to p.
     """
     return p if 0 <= p <= 1 else 0.5
 
 
-def clear_old_files(extension):
-    old_files = glob.glob("static/files/*." + extension, recursive=True)
-    for file in old_files:
-        os.remove(file)
+def clear_old_files(extension, directory="static/files/"):
+    [os.remove(file) for file in glob.glob(f"{directory}*.{extension}",
+                                           recursive=True)]
 
 
-def get_random_sample(distribution, size, *parameters):
+def get_random_sample(distribution, size, parameters):
     """
     Returns a random sample of size {size} with the given {parameters},
     for the specified {distribution}.
     """
+    if distribution in {"Negative Binomial", "Binomial", "Geometric",
+                        "Bernoulli"}:
+        # probability(p) is the last parameter
+        parameters[-1] = validate_probability(parameters[-1])
+
     try:
         return distributions[distribution].rvs(*parameters, size=size)
     except KeyError:
@@ -82,11 +86,13 @@ def plot_graph(graph_type, data, title):
 
 def get_graphs(data):
     """
-    Plots  distribution graph of the random sample and saves it to a png file
+    Plots various graphs using the data, saves them as png files, and returns
+    a dict of their names.
     """
-    # clear old graphs
+    # remove previously saved graphs
     clear_old_files("png")
-    # create time-stamped names for the graph image
+
+    # plot and save the graphs of the current data
     graphs = {'distplot': plot_graph(distplot, data, "Distribution Plot"),
               'boxplot': plot_graph(boxplot, data, "Box Plot"),
               'violinplot': plot_graph(violinplot, data, "Violin Plot")
@@ -94,16 +100,16 @@ def get_graphs(data):
     return graphs
 
 
-def Int_float(x):
+def int_if_fraction_is_zero(x):
     """
-    Converts float values with zero fractional parts into integers
+    Converts numerical values with zero fractional parts into integers
     """
     return int(x) if x % 1 == 0 else x
 
 
 def descriptive_stats(data):
     """
-    Returns basic descriptive statistics for the random sample
+    Returns basic descriptive statistics for the data
     """
     stats = {'Mean': data.mean(),
              'Median': median(data),
@@ -116,4 +122,5 @@ def descriptive_stats(data):
     except ValueError:
         stats['Mode'] = "No unique mode."
 
-    return {key: Int_float(round(value, 4)) for key, value in stats.items()}
+    return {key: int_if_fraction_is_zero(round(value, 4))
+            for key, value in stats.items()}
