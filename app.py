@@ -7,9 +7,8 @@ from handy_functions import (
     get_random_sample,
     get_graphs,
     descriptive_stats,
-    validate_probability,
     clear_old_files,
-    Int_float
+    int_if_fraction_is_zero
 )
 from collections import defaultdict
 
@@ -34,10 +33,9 @@ def parameters():
         data['chosen_dist'] = request.form["chosen_dist"]
         data['dist_info'] = data['distributions'].loc[data['chosen_dist']]
         data['graphs'] = None
-        input_form = True
-        if data['chosen_dist'] == "Please Select":
-            input_form = False
 
+        # Only show the parameter input form is a distribution is specified
+        input_form = False if data['chosen_dist'] == "Please Select" else True
         return render_template("index.html", data=data, _form=input_form)
 
     return redirect(url_for("index"))
@@ -53,36 +51,28 @@ def selection():
         # extracting form data
         data['sample_size'] = int(request.form["sample_size"])
         data['parameters'] = \
-            [Int_float(float(request.form[f"parameter {i + 1}"]))
+            [int_if_fraction_is_zero(float(request.form[f"parameter {i + 1}"]))
              for i in range(data['dist_info']["no_of_parameters"])]
-        # ensuring 0<=p<=1 for affected distributions
-        if data['chosen_dist'] in {"Negative Binomial", "Binomial",
-                                   "Geometric", "Bernoulli"}:
-            # probability(p) is the rightmost parameter
-            data['parameters'][-1] = \
-                validate_probability(data['parameters'][-1])
 
         # creating and processing the sample
-        random_sample = get_random_sample(
-            data['chosen_dist'], data['sample_size'], *data['parameters'])
+        random_sample = get_random_sample(distribution=data['chosen_dist'],
+                                          size=data['sample_size'],
+                                          parameters=data['parameters'])
         data['graphs'] = get_graphs(random_sample)
         data['summary_stats'] = descriptive_stats(random_sample)
         sample_data = pd.Series(random_sample,
-                                name=data['chosen_dist'] + " distribution")
+                                name=f"{data['chosen_dist']}_distribution")
+        preview = sample_data.head(20).round(4)
 
-        # generating a preview
-        if len(sample_data) > 0:
-            preview = sample_data.head(20).round(7)
-        else:
-            preview = []
+        # removing previously saved samples
+        clear_old_files("csv")
 
-        # exporting the sample to csv file available for download
-        clear_old_files("csv")  # removes previously saved samples
-        sample_name = data['chosen_dist'] + "_sample_data.csv"
-        sample_data.to_csv("static/files/" + sample_name, index=False)
+        # exporting the sample as a csv file for download
+        sample_name = f"static/files/{data['chosen_dist']}_sample_data.csv"
+        sample_data.to_csv(sample_name, index=False)
+
         return render_template("index.html", data=data, preview=preview,
-                               sample_name=sample_name
-                               )
+                               sample_name=sample_name)
     return redirect(url_for("index"))
 
 
