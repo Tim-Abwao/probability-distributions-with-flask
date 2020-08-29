@@ -43,36 +43,37 @@ distributions = {
 
 def validate_probability(p):
     """
-    Ensures that probabilities are in the range 0 <= p <= 1, or else assigns
-    a default value of 0.5 to p.
+    Ensure that probabilities are in the range 0 <= p <= 1, or else assign
+    them a default value of 0.5.
     """
     return p if 0 <= p <= 1 else 0.5
 
 
 def clear_old_files(extension, directory="static/files/"):
-    [os.remove(file) for file in glob.glob(f"{directory}*.{extension}",
-                                           recursive=True)]
+    """Remove files of specified format from given directory."""
+    filenames = glob.glob(f"{directory}*.{extension}", recursive=True)
+    [os.remove(file) for file in filenames]
 
 
 def get_random_sample(distribution, size, parameters):
     """
-    Returns a random sample of size {size} with the given {parameters},
-    for the specified {distribution}.
+    Generate a random sample of the specified distribution of size length with
+    supplied parameters.
     """
     if distribution in {"Negative Binomial", "Binomial", "Geometric",
                         "Bernoulli"}:
-        # probability(p) is the last parameter
-        parameters[-1] = validate_probability(parameters[-1])
-
+        parameters[-1] = validate_probability(parameters[-1])  # p is rightmost
+    # Get int values for parameters read from form as float
+    parameters = [int_if_fraction_is_zero(param) for param in parameters]
     try:
         return distributions[distribution].rvs(*parameters, size=size)
-    except KeyError:
-        return 1
+    except KeyError as error:
+        return error
 
 
 def plot_graph(graph_type, data, title):
     """
-    Plots the required {graph_type} using the {data}, saves it, and returns
+    Plot the specified graph_type from the data, save it, and return
     its name.
     """
     plt.figure(figsize=(10, 6))
@@ -86,13 +87,9 @@ def plot_graph(graph_type, data, title):
 
 def get_graphs(data):
     """
-    Plots various graphs using the data, saves them as png files, and returns
-    a dict of their names.
+    Get a distplot, boxplot and violinplot as png files.
     """
-    # remove previously saved graphs
     clear_old_files("png")
-
-    # plot and save the graphs of the current data
     graphs = {'distplot': plot_graph(distplot, data, "Distribution Plot"),
               'boxplot': plot_graph(boxplot, data, "Box Plot"),
               'violinplot': plot_graph(violinplot, data, "Violin Plot")
@@ -102,25 +99,19 @@ def get_graphs(data):
 
 def int_if_fraction_is_zero(x):
     """
-    Converts numerical values with zero fractional parts into integers
+    Convert numerical values with zero fractional parts into integers.
     """
     return int(x) if x % 1 == 0 else x
 
 
 def descriptive_stats(data):
-    """
-    Returns basic descriptive statistics for the data
-    """
+    """Get basic descriptive statistics of the data."""
     stats = {'Mean': data.mean(),
-             'Median': median(data),
              'Standard Deviation': data.std(),
              'Minimum': data.min(),
-             'Maximum': data.max()
+             'Maximum': data.max(),
+             'Median': median(data),
+             'Mode': mode(data)
              }
-    try:
-        stats['Mode'] = mode(data)
-    except ValueError:
-        stats['Mode'] = "No unique mode."
-
     return {key: int_if_fraction_is_zero(round(value, 4))
             for key, value in stats.items()}
