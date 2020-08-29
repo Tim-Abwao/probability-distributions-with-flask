@@ -93,7 +93,6 @@
 <body>
 	<div class="content">
 		{% if show_intro %}
-		<!-- Toggle introductory statement -->
 		<h1>Statistical Distribution Sampler</h1>
 		<p>This is a simple web app to explore some useful <b>statistical distributions</b>, and showcase the
 			functionality of some Python packages (Flask, SciPy, Pandas, Matplotlib and Seaborn, among others).</p>
@@ -152,10 +151,9 @@
 	</div>
 
 	<div>
-		<!-- Displaying sample's graphs and preview -->
 		{% if data['graphs'] %}
 		<span><em>{{ 'Sample size: ' }}</em></span>
-		<span style="color: teal;"> {{data['sample_size']}} &emsp;</span><br>
+		<span style="color: teal;"> {{data['sample_size']|round()}} &emsp;</span><br>
 		<!-- Display selected parameters -->
 		{% for i in range(data['dist_info']["no_of_parameters"]) %}
 		<span><em>{{ (data['dist_info']['parameter_info'].split(',')[i])~': ' }}</em></span>
