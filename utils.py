@@ -55,20 +55,11 @@ def clear_old_files(extension, directory="static/files/"):
     [os.remove(file) for file in filenames]
 
 
-def get_random_sample(distribution, size, parameters):
+def int_if_fraction_is_zero(x):
     """
-    Generate a random sample of the specified distribution of size length with
-    supplied parameters.
+    Convert numerical values with zero fractional parts into integers.
     """
-    if distribution in {"Negative Binomial", "Binomial", "Geometric",
-                        "Bernoulli"}:
-        parameters[-1] = validate_probability(parameters[-1])  # p is rightmost
-    # Get int values for parameters read from form as float
-    parameters = [int_if_fraction_is_zero(param) for param in parameters]
-    try:
-        return distributions[distribution].rvs(*parameters, size=size)
-    except KeyError as error:
-        return error
+    return int(x) if x % 1 == 0 else x
 
 
 def plot_graph(graph_type, data, title):
@@ -97,13 +88,6 @@ def get_graphs(data):
     return graphs
 
 
-def int_if_fraction_is_zero(x):
-    """
-    Convert numerical values with zero fractional parts into integers.
-    """
-    return int(x) if x % 1 == 0 else x
-
-
 def descriptive_stats(data):
     """Get basic descriptive statistics of the data."""
     stats = {'Mean': data.mean(),
@@ -115,3 +99,20 @@ def descriptive_stats(data):
              }
     return {key: int_if_fraction_is_zero(round(value, 4))
             for key, value in stats.items()}
+
+
+def get_random_sample(distribution, size, parameters):
+    """
+    Generate a random sample of the specified distribution of size length with
+    supplied parameters.
+    """
+    if distribution in {"Negative Binomial", "Binomial", "Geometric",
+                        "Bernoulli"}:
+        parameters[-1] = validate_probability(parameters[-1])  # p is rightmost
+    # Get int values for parameters read from form as float
+    parameters = [int_if_fraction_is_zero(param) for param in parameters]
+    try:
+        data = distributions[distribution].rvs(*parameters, size=size)
+        return data, get_graphs(data), descriptive_stats(data)
+    except KeyError as error:
+        return error

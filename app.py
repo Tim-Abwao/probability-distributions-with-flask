@@ -1,14 +1,6 @@
-#!/usr/bin/env python3
-# coding: utf-8
-
 from flask import Flask, render_template, request, url_for, redirect
 import pandas as pd
-from handy_functions import (
-    get_random_sample,
-    get_graphs,
-    descriptive_stats,
-    clear_old_files
-)
+from utils import get_random_sample, clear_old_files
 from collections import defaultdict
 
 app = Flask(__name__)
@@ -56,21 +48,22 @@ def selection():
             return redirect(url_for('index'))
 
         data['sample_size'] = int(request.form["sample_size"])
-        params = [float(request.form[f"parameter {param + 1}"])
-                  for param in range(data['dist_info']["no_of_parameters"])]
-        data['parameters'] = params
-        random_sample = get_random_sample(distribution=data['chosen_dist'],
-                                          size=data['sample_size'],
-                                          parameters=data['parameters'])
-        data['graphs'] = get_graphs(random_sample)
-        data['summary_stats'] = descriptive_stats(random_sample)
+        data['parameters'] = [
+            float(request.form[f"parameter {param + 1}"])
+            for param in range(data['dist_info']["no_of_parameters"])
+        ]
+        random_sample, data['graphs'], data['summary_stats'] = \
+            get_random_sample(distribution=data['chosen_dist'],
+                              size=data['sample_size'],
+                              parameters=data['parameters'])
+
         sample_data = pd.Series(random_sample,
                                 name=f"{data['chosen_dist']}_distribution")
         preview = sample_data.head(20).round(4)
 
         clear_old_files("csv")
-        sample_name = f"static/files/{data['chosen_dist']}_sample_data.csv"
-        sample_data.to_csv(sample_name, index=False)
+        sample_name = f"{data['chosen_dist']}_sample_data.csv"
+        sample_data.to_csv(f"static/files/{sample_name}", index=False)
 
         return render_template("index.html", data=data, preview=preview,
                                sample_name=sample_name)
@@ -79,4 +72,4 @@ def selection():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
