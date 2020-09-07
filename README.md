@@ -2,7 +2,11 @@
 
 A simple app to learn something about several popular and useful statistical distributions.
 
-Powered by [Flask][1], [Pandas][2], [SciPy][3] and [Seaborn][4]. The application is live [here][5].
+Powered by [Flask][1], [Pandas][2], [SciPy][3] and [Seaborn][4].
+
+![screencast](static/screen.gif)
+
+A similar, interactive version of this app based on [Dash][5] is live [here][6].
 
 ## Getting Started
 
@@ -28,10 +32,20 @@ Powered by [Flask][1], [Pandas][2], [SciPy][3] and [Seaborn][4]. The application
     python app.py
     ```
 
-Then browse to <http://127.0.0.1:5000>. That's all, enjoy.
+    But the [recommended][7] way to run it is:
+
+    ```bash
+    export FLASK_APP=app
+    export FLASK_ENV=development
+    flask run
+    ```
+
+Afterwards, browse to <http://localhost:5000>. That's all, enjoy.
 
 [1]: https://palletsprojects.com/p/flask/
 [2]: https://pandas.pydata.org
 [3]: https://www.scipy.org
 [4]: https://seaborn.pydata.org
-[5]: https://statistics-distributions.herokuapp.com
+[5]: https://plotly.com/dash/
+[6]: https://statistics-distributions.herokuapp.com
+[7]: https://flask.palletsprojects.com/en/master/server/#command-line
