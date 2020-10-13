@@ -102,7 +102,7 @@ def plot_graph(graph_func, data, title, kwargs={}):
         specified in graph_func.
     """
     plt.figure(figsize=(8, 4.5))
-    ax = graph_func(data=data, color="#3FBFBF", **kwargs)
+    ax = graph_func(x=data, color="#3FBFBF", **kwargs)
     ax.tick_params(axis='x', labelrotation=45)
     ax.set_title(title, fontsize=25, fontweight=550, pad=20)
     graph = StringIO()
@@ -132,7 +132,7 @@ def descriptive_stats(data):
             for key, value in stats.items()}
 
 
-def get_random_sample(distribution="Normal", size=50, parameters=(0, 1)):
+def process_random_sample(distribution="Normal", size=50, parameters=(0, 1)):
     """
     Generate a random sample of the specified distribution.
 
@@ -155,8 +155,8 @@ def get_random_sample(distribution="Normal", size=50, parameters=(0, 1)):
         parameters[-1] = validate_probability(parameters[-1])
 
     parameters = [int_from_0_decimal(param) for param in parameters]
-    try:
-        data = distributions[distribution].rvs(*parameters, size=size)
-        return data, get_graphs(data), descriptive_stats(data)
-    except KeyError as error:
-        return error
+
+    data = distributions[distribution].rvs(*parameters, size=size)
+    graphs = get_graphs(data)
+    stats = descriptive_stats(data)
+    return data, graphs, stats

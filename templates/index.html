@@ -102,7 +102,7 @@
 		{% endif %}
 
 		<!-- Distribution selection -->
-		<form action="{{ url_for('parameters')}}" method="post">
+		<form action="{{ url_for('description')}}" method="post">
 			<label for="chosen_dist">Statistical Distribution: </label>
 			<select id="chosen_dist" name='chosen_dist'>
 				{% for distribution in data['distributions'].index %}
@@ -126,7 +126,7 @@
 		<!-- Collecting parameter input-->
 		{% if _form %}
 		<p>Fill out the fields below to create a sample, and see see how it looks.</p>
-		<form action="{{ url_for('selection')}}" method="post">
+		<form action="{{ url_for('results')}}" method="post">
 			{% for i in range(data['dist_info']['no_of_parameters']) %}
 			<label for="{{ 'parameter ' ~ (i+1) }}">{{ 'parameter ' ~ (i+1) }}</label>
 			<input id="{{ 'parameter ' ~ (i+1) }}" type="number" name="{{ 'parameter ' ~ (i+1) }}" min="0" max="1000"
@@ -145,12 +145,19 @@
 
 	<div>
 		{% if data['graphs'] %}
+
+		<h3>Parameters</h3>
 		<span><em>{{ 'Sample size: ' }}</em></span>
 		<span style="color: teal;"> {{data['sample_size']|round()}} &emsp;</span><br>
-		<!-- Display selected parameters -->
 		{% for i in range(data['dist_info']["no_of_parameters"]) %}
 		<span><em>{{ (data['dist_info']['parameter_info'].split(',')[i])~': ' }}</em></span>
 		<span style="color: teal;"> {{ (data['parameters'][i]) }} &emsp;</span><br>
+		{% endfor %}
+
+		<h3>Summary statistics</h3>
+		{% for statistic, value in data['summary_stats'].items() %}
+		<span><em>{{ statistic~':' }}</em></span>
+		<span style="color: teal;"> {{ value }}</span><br>
 		{% endfor %}
 	</div>
 	<br>
@@ -170,12 +177,6 @@
 			distribution plots.</p>
 	</div>
 	<div>
-		<h3>Summary statistics</h3>
-		{% for statistic, value in data['summary_stats'].items() %}
-		<span><em>{{ statistic~':' }}</em></span>
-		<span style="color: teal;"> {{ value }}</span><br>
-		{% endfor %}
-
 		{% if preview.any() %}
 		<br>
 		<h3>A Preview of the above {{ data['chosen_dist'] }} random sample.</h3>
