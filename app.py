@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, url_for, redirect
 import pandas as pd
-from utils import get_random_sample, clear_old_files
+from utils import process_random_sample, clear_old_files
 from collections import defaultdict
 
 app = Flask(__name__)
@@ -8,20 +8,21 @@ app = Flask(__name__)
 data = defaultdict(list)
 data['distributions'] = pd.read_csv("data/distributions.csv",
                                     index_col="distribution")
+data['chosen_dist'] = None
 
 
 @app.route("/")
 def index():
-    """Homepage with distribution-selecting menu."""
+    """Homepage."""
     data['chosen_dist'] = data['graphs'] = None
     return render_template("index.html", data=data, show_intro=True)
 
 
-@app.route("/parameters", methods=["POST", "GET"])
-def parameters():
+@app.route("/description", methods=["POST", "GET"])
+def description():
     """
-    Parameters page with a brief description of selected distribution, a
-    distribution-selecting menu, and parameter-collecting forms.
+    Display a brief description of the selected distribution, and set its
+    parameters.
     """
     if request.method == "POST":
         data['chosen_dist'] = request.form["chosen_dist"]
@@ -36,16 +37,15 @@ def parameters():
     return redirect(url_for("index"))
 
 
-@app.route("/distribution", methods=["POST", "GET"])
-def selection():
+@app.route("/results", methods=["POST", "GET"])
+def results():
     """
-    Results page with graphs, descriptive statistics, and a preview of the
-    generated sample.
+    Show graphs, descriptive statistics, and a preview of the generated sample.
     """
     if request.method == "POST":
-        # Redirect to homepage if no distribution is selected
+        # Redirect to description page if no distribution is selected
         if not data['chosen_dist']:
-            return redirect(url_for('index'))
+            return redirect(url_for('description'))
 
         data['sample_size'] = int(request.form["sample_size"])
         data['parameters'] = [
@@ -53,20 +53,20 @@ def selection():
             for param in range(data['dist_info']["no_of_parameters"])
         ]
         random_sample, data['graphs'], data['summary_stats'] = \
-            get_random_sample(distribution=data['chosen_dist'],
-                              size=data['sample_size'],
-                              parameters=data['parameters'])
+            process_random_sample(distribution=data['chosen_dist'],
+                                  size=data['sample_size'],
+                                  parameters=data['parameters'])
 
         sample_data = pd.Series(random_sample,
                                 name=f"{data['chosen_dist']}_distribution")
         preview = sample_data.head(20).round(4)
 
         clear_old_files("csv")
-        sample_name = f"{data['chosen_dist']}_sample_data.csv"
-        sample_data.to_csv(f"static/files/{sample_name}", index=False)
+        sample_filename = f"{data['chosen_dist']}_sample_data.csv"
+        sample_data.to_csv(f"static/files/{sample_filename}", index=False)
 
         return render_template("index.html", data=data, preview=preview,
-                               sample_name=sample_name)
+                               sample_name=sample_filename)
 
     return redirect(url_for("index"))
 
