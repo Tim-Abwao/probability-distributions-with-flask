@@ -56,13 +56,9 @@
 			border-radius: 15px;
 			padding: 3%;
 			font-size: 0.8em;
-			margin-bottom: 7%;
+			margin: 4% auto;
 			font-style: italic;
-			text-align: left;
-		}
-
-		img {
-			width: 100%;
+			max-width: 600px;
 		}
 
 		a {
@@ -116,6 +112,8 @@
 	<div>
 		{% if data['chosen_dist'] %}
 		<h2>{{ 'Current selection: '~ data['chosen_dist'] ~ ' Distribution'}}</h2>
+
+		{% if not data['graphs']%}
 		<!-- Displaying distribution information -->
 		<div class="content">
 			{% for info in data['dist_info']['summary'].split('|') %}
@@ -123,6 +121,8 @@
 			{% endfor %}
 			<a href="{{ data['dist_info']['wiki_link'] }}" target="_blank"> <i>learn more...</i></a><br>
 		</div>
+		{% endif %}
+	
 		<!-- Collecting parameter input-->
 		{% if _form %}
 		<p>Fill out the fields below to create a sample, and see see how it looks.</p>
@@ -162,17 +162,17 @@
 	</div>
 	<br>
 	<div class="graphs">
-		{{ data['graphs']['distplot'].getvalue()[155:] | safe }}
+		{{ data['graphs']['distplot'].getvalue() | safe }}
 		<p>Distribution plots show the <a href="https://en.wikipedia.org/wiki/Probability_distribution">probability
 				distribution</a> of the random sample </p>
 	</div>
 	<div class="graphs">
-		{{ data['graphs']['boxplot'].getvalue()[155:] | safe }}
+		{{ data['graphs']['boxplot'].getvalue() | safe }}
 		<p><a href="https://en.wikipedia.org/wiki/Box_plot">Box plots</a> show summary statistics such as the median,
 			maximum, minimum and quartiles. They help detect outliers.</p>
 	</div>
 	<div class="graphs">
-		{{ data['graphs']['violinplot'].getvalue()[155:] | safe }}
+		{{ data['graphs']['violinplot'].getvalue() | safe }}
 		<p><a href="https://en.wikipedia.org/wiki/Violin_plot">Violin plots</a> are a cross between box plots and
 			distribution plots.</p>
 	</div>

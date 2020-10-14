@@ -101,14 +101,32 @@ def plot_graph(graph_func, data, title, kwargs={}):
         A dictionary of keyword arguements to supply to the plotting function
         specified in graph_func.
     """
-    plt.figure(figsize=(8, 4.5))
+    plt.figure()
     ax = graph_func(x=data, color="#3FBFBF", **kwargs)
     ax.tick_params(axis='x', labelrotation=45)
     ax.set_title(title, fontsize=25, fontweight=550, pad=20)
     graph = StringIO()
     plt.savefig(graph, format='svg', transparent=True)
     plt.close()
-    return graph
+    return rescale_graph(graph)
+
+
+def rescale_graph(graph):
+    """
+    Replace the default matplotlib svg output's properties and dimensions with
+    rescalable values.
+
+    parameters
+    ----------
+    graph: StringIO
+        Text buffer containing matplotlib-generated svg code.
+    """
+    graph_body = graph.getvalue()[292:]
+    new_svg_properties = f"""
+    <!-- Created with matplotlib (https://matplotlib.org/) -->
+    <svg height="100%" version="1.1" viewBox="0 0 460.8 345.6" width="100%"
+    {graph_body}"""
+    return StringIO(new_svg_properties)
 
 
 def descriptive_stats(data):
