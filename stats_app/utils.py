@@ -1,11 +1,12 @@
-import matplotlib
-import matplotlib.pyplot as plt
-from seaborn import boxplot, histplot, violinplot
 import os
 from glob import glob
-from statistics import median, mode
-from scipy import stats
 from io import StringIO
+from statistics import median, mode
+
+import matplotlib
+import matplotlib.pyplot as plt
+from scipy import stats
+from seaborn import boxplot, histplot, violinplot
 
 
 matplotlib.use('svg')

@@ -1,9 +1,13 @@
-from flask import Flask, render_template, request, url_for, redirect
-import pandas as pd
-from utils import process_random_sample, clear_old_files
 from collections import defaultdict
 
+import pandas as pd
+from flask import Flask, redirect, render_template, request, url_for
+
+from stats_app.utils import clear_old_files, process_random_sample
+
+
 app = Flask(__name__)
+
 
 data = defaultdict(list)
 data['distributions'] = pd.read_csv("data/distributions.csv",
@@ -63,13 +67,10 @@ def results():
 
         clear_old_files("csv")
         sample_filename = f"{data['chosen_dist']}_sample_data.csv"
-        sample_data.to_csv(f"static/files/{sample_filename}", index=False)
+        sample_data.to_csv(f"stats_app/static/files/{sample_filename}",
+                           index=False)
 
         return render_template("index.html", data=data, preview=preview,
                                sample_name=sample_filename)
 
     return redirect(url_for("index"))
-
-
-if __name__ == "__main__":
-    app.run()
