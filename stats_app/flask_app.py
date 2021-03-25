@@ -67,7 +67,7 @@ def results():
 
         clear_old_files("csv")
         sample_filename = f"{data['chosen_dist']}_sample_data.csv"
-        sample_data.to_csv(f"stats_app/static/files/{sample_filename}",
+        sample_data.to_csv(f"stats_app/static/{sample_filename}",
                            index=False)
 
         return render_template("index.html", data=data, preview=preview,

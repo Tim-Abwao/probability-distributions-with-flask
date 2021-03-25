@@ -43,7 +43,7 @@ def validate_probability(p):
     return p if 0 <= p <= 1 else 0.5
 
 
-def clear_old_files(extension='csv', directory="static/files/"):
+def clear_old_files(extension='csv', directory="stats_app/static/"):
     """
     Remove files of the specified format from the given directory.
 
