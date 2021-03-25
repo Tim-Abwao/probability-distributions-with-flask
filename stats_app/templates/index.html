@@ -23,6 +23,7 @@
 		input {
 			padding: 10px;
 			box-shadow: 2px 4px 8px rgb(4, 109, 109);
+			border: 1px;
 			border-radius: 7px;
 			margin: 20px;
 			width: 220px;
@@ -63,6 +64,12 @@
 
 		a {
 			color: teal;
+			text-decoration: none;
+		}
+
+		a:hover {
+			text-decoration: underline;
+			text-decoration-style: dotted;
 		}
 
 		footer {
@@ -122,7 +129,7 @@
 			<a href="{{ data['dist_info']['wiki_link'] }}" target="_blank"> <i>learn more...</i></a><br>
 		</div>
 		{% endif %}
-	
+
 		<!-- Collecting parameter input-->
 		{% if _form %}
 		<p>Fill out the fields below to create a sample, and see see how it looks.</p>
@@ -195,8 +202,8 @@
 		{% endif %}
 		<br>
 		<footer>
-			<a href="{{ url_for('static', filename= 'files/'~sample_name) }}">Download Sample </a><br><br>
-			<a href="{{ url_for('index') }} ">Back to home page</a>
+			<a class="button" href="{{ url_for('static', filename=sample_name ) }}">Download Sample </a><br><br>
+			<a class="button" href="{{ url_for('index') }} ">Back to home page</a>
 		</footer>
 		{% endif %}
 
