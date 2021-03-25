@@ -18,38 +18,32 @@ data['chosen_dist'] = None
 @app.route("/")
 def index():
     """Homepage."""
-    data['chosen_dist'] = data['graphs'] = None
-    return render_template("index.html", data=data, show_intro=True)
+    return render_template("index.html", data=data['distributions'])
 
 
-@app.route("/description", methods=["POST", "GET"])
-def description():
+@app.route("/summary", methods=["POST", "GET"])
+def summary():
     """
-    Display a brief description of the selected distribution, and set its
+    Display a brief summary of the selected distribution, and set its
     parameters.
     """
     if request.method == "POST":
         data['chosen_dist'] = request.form["chosen_dist"]
         data['dist_info'] = data['distributions'].loc[data['chosen_dist']]
-        data['graphs'] = None
 
-        # Hide parameter input form if no distribution is specified
-        input_form = False if data['chosen_dist'] == "Please Select" else True
-
-        return render_template("index.html", data=data, _form=input_form)
+        return render_template("summary.html", data=data, set_params=True)
 
     return redirect(url_for("index"))
 
 
-@app.route("/results", methods=["POST", "GET"])
-def results():
+@app.route("/sample_results", methods=["POST", "GET"])
+def sample_results():
     """
     Show graphs, descriptive statistics, and a preview of the generated sample.
     """
     if request.method == "POST":
-        # Redirect to description page if no distribution is selected
-        if not data['chosen_dist']:
-            return redirect(url_for('description'))
+        if not data['chosen_dist']:  # If no distribution is currently selected
+            redirect(url_for('index'))
 
         data['sample_size'] = int(request.form["sample_size"])
         data['parameters'] = [
@@ -63,14 +57,13 @@ def results():
 
         sample_data = pd.Series(random_sample,
                                 name=f"{data['chosen_dist']}_distribution")
-        preview = sample_data.head(20).round(4)
-
         clear_old_files("csv")
         sample_filename = f"{data['chosen_dist']}_sample_data.csv"
         sample_data.to_csv(f"stats_app/static/{sample_filename}",
                            index=False)
+        data['preview'] = sample_data.head(20).round(4)
+        data['sample_name'] = sample_filename
 
-        return render_template("index.html", data=data, preview=preview,
-                               sample_name=sample_filename)
+        return render_template("results.html", data=data)
 
     return redirect(url_for("index"))

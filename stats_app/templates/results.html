@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block body %}
+<!-- Display current parameters -->
+<h3>Parameters</h3>
+<span><em>{{ 'Sample size: ' }}</em></span>
+<span style="color: teal;"> {{data['sample_size']|round()}} &emsp;</span><br>
+{% for i in range(data['dist_info']["no_of_parameters"]) %}
+<span><em>{{ (data['dist_info']['parameter_info'].split(',')[i])~': ' }}</em></span>
+<span style="color: teal;"> {{ (data['parameters'][i]) }} &emsp;</span><br>
+{% endfor %}
+
+<h3>Summary statistics</h3>
+{% for statistic, value in data['summary_stats'].items() %}
+<span><em>{{ statistic~':' }}</em></span>
+<span style="color: teal;"> {{ value }}</span><br>
+{% endfor %}
+
+<div class="graphs">
+	{{ data['graphs']['distplot'].getvalue() | safe }}
+	<p>Distribution plots show the <a href="https://en.wikipedia.org/wiki/Probability_distribution">probability
+			distribution</a> of the random sample </p>
+</div>
+<div class="graphs">
+	{{ data['graphs']['boxplot'].getvalue() | safe }}
+	<p><a href="https://en.wikipedia.org/wiki/Box_plot">Box plots</a> show summary statistics such as the median,
+		maximum, minimum and quartiles. They help detect outliers.</p>
+</div>
+<div class="graphs">
+	{{ data['graphs']['violinplot'].getvalue() | safe }}
+	<p><a href="https://en.wikipedia.org/wiki/Violin_plot">Violin plots</a> are a cross between box plots and
+		distribution plots.</p>
+</div>
+
+<div>
+	<h3>A Preview of the above {{ data['chosen_dist'] }} random sample.</h3>
+	<table style="margin: auto;">
+		<tr>
+			<th></th>
+			<th>X</th>
+		</tr>
+		{% for index, value in data['preview'].iteritems() %}
+		<tr>
+			<td>{{ index + 1 }}</td>
+			<td>{{ value }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+
+	<footer>
+		<a class="button" href="{{ url_for('static', filename=data['sample_name'] ) }}">Download Sample </a><br><br>
+		<a class="button" href="{{ url_for('index') }} ">Back to home page</a>
+	</footer>
+</div>
+{% endblock %}
