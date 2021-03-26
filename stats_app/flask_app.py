@@ -3,7 +3,7 @@ from collections import defaultdict
 import pandas as pd
 from flask import Flask, redirect, render_template, request, url_for
 
-from stats_app.utils import clear_old_files, process_random_sample
+from stats_app import utils
 
 
 app = Flask(__name__)
@@ -45,22 +45,32 @@ def sample_results():
         if not data['chosen_dist']:  # If no distribution is currently selected
             redirect(url_for('index'))
 
+        # Collect parameters from the submitted form
         data['sample_size'] = int(request.form["sample_size"])
-        data['parameters'] = [
+        parameters = [
             float(request.form[f"parameter {param + 1}"])
             for param in range(data['dist_info']["no_of_parameters"])
         ]
-        random_sample, data['graphs'], data['summary_stats'] = \
-            process_random_sample(distribution=data['chosen_dist'],
-                                  size=data['sample_size'],
-                                  parameters=data['parameters'])
+        data['parameters'] = [utils.int_from_0_decimal(param)
+                              for param in parameters]
 
+        # Create and process the sample using provided parameters
+        random_sample = utils.get_random_sample(
+            distribution=data['chosen_dist'],
+            size=data['sample_size'],
+            parameters=data['parameters']
+        )
+        data['graphs'] = utils.get_graphs(random_sample)
+        data['summary_stats'] = utils.get_descriptive_stats(random_sample)
+
+        # Save the sample for download
+        utils.clear_old_files("csv")  # remove previous saved samples
         sample_data = pd.Series(random_sample,
                                 name=f"{data['chosen_dist']}_distribution")
-        clear_old_files("csv")
         sample_filename = f"{data['chosen_dist']}_sample_data.csv"
         sample_data.to_csv(f"stats_app/static/{sample_filename}",
                            index=False)
+
         data['preview'] = sample_data.head(20).round(4)
         data['sample_name'] = sample_filename
 
