@@ -1,6 +1,7 @@
-import os
-from glob import glob
-from io import StringIO
+from base64 import b64encode
+
+import pandas as pd
+from io import BytesIO
 from statistics import median, mode
 
 import matplotlib
@@ -8,10 +9,13 @@ from matplotlib.figure import Figure
 from scipy import stats
 from seaborn import boxplot, histplot, violinplot
 
+matplotlib.use("svg")  # Using the non-interactive svg back-end
 
-matplotlib.use('svg')  # Using the non-interactive svg back-end
+distribution_data = pd.read_csv(
+    "data/distributions.csv", index_col="distribution"
+)
 
-distributions = {
+distribution_functions = {
     "Normal": stats.norm,
     "Poisson": stats.poisson,
     "Bernoulli": stats.bernoulli,
@@ -26,161 +30,184 @@ distributions = {
     "Pareto": stats.pareto,
     "Student t": stats.t,
     "Binomial": stats.binom,
-    "Negative Binomial":  stats.nbinom
+    "Negative Binomial": stats.nbinom,
 }
 
 
-def validate_probability(p):
-    """
-    Ensure that probability is in the interval [0, 1], or else assign a
-    default value of 0.5.
+def plot_graph(graph_func, data, title, **kwargs):
+    """Get a graph for the supplied data using seaborn.
 
-    parameters
+    Parameters
     ----------
-    p: int, float
-        Probability value.
-    """
-    return p if 0 <= p <= 1 else 0.5
-
-
-def clear_old_files(extension='csv', directory="stats_app/static/"):
-    """
-    Remove files of the specified format from the given directory. Useful for
-    clearing files saved for download.
-
-    parameters
-    ----------
-    extension: str
-        A file extension specifying a file format e.g "csv", "png", "html".
-    directory: str
-        Relative or absolute path to the folder containing the files to remove.
-    """
-    file_names = glob(f"{directory}*.{extension}", recursive=True)
-    [os.remove(file) for file in file_names]
-
-
-def int_from_0_decimal(number):
-    """
-    Cast a numeric value as an integer if its fractional part is close to zero.
-    """
-    return int(number) if number % 1 < 1e-6 else number
-
-
-def plot_graph(graph_func, data, title, kwargs={}):
-    """
-    Create a graph using matplotlib and seaborn.
-
-    parameters
-    ----------
-    graph_func: func
+    graph_func : func
         A seaborn plotting function.
-    data: array-like
+    data : array-like
         The data values to plot.
-    title: str
+    title : str
         A title for the graph to be plotted.
-    kwargs: dict
-        A dictionary of keyword arguements to supply to the plotting function
-        specified in graph_func.
+    **kwargs
+        Extra keyword arguments to supply to graph_func.
+
+    Returns
+    -------
+    Base64-encoded string for a graph in PNG format.
     """
-    # Initialize the figure and axes
-    fig = Figure()
+    fig = Figure(figsize=(6, 4))
     ax = fig.subplots(nrows=1, ncols=1)
     # Plot the graph
     graph_func(x=data, color="#3FBFBF", ax=ax, **kwargs)
-    # Format the axes
-    ax.tick_params(axis='x', labelrotation=45)
-    ax.set_title(title, fontsize=25, fontweight=550, pad=20)
-    # Save the graphs in file buffer
-    graph = StringIO()
-    fig.savefig(graph, format='svg', transparent=True)
-    return rescale_graph(graph)
+    ax.tick_params(axis="x", rotation=45)
+    ax.set_title(title, fontsize=20, fontweight=550, pad=20)
+    fig.tight_layout()
 
+    # Get the graph in PNG format as a base64-encoded string
+    graph = BytesIO()
+    fig.savefig(graph, transparent=True)
 
-def rescale_graph(graph):
-    """
-    Replace the default matplotlib svg file output's properties and dimensions
-    with rescalable/responsive values.
-
-    parameters
-    ----------
-    graph: StringIO
-        Text buffer containing matplotlib-generated svg content.
-    """
-    # Select the svg body and index out the head which has fixed dimensions
-    graph_body = graph.getvalue()[292:]
-    # Rewrite the head with relative height and width 
-    new_graph_head = """
-    <!-- Created with matplotlib (https://matplotlib.org/) -->
-    <svg height="100%" version="1.1" viewBox="0 0 460.8 345.6" width="100%"
-    """
-    return StringIO(f"{new_graph_head}{graph_body}")
+    return b64encode(graph.getvalue()).decode("utf-8")
 
 
 def get_graphs(data):
-    """
-    Plot graphs using the supplied data, and get them as text objects in svg
-    format.
+    """Plot various types of graphs using the `plot_graph` function.
 
-    parameters
+    Parameters
     ----------
-    data: sequence, array-like
+    data : sequence, array-like
         The values to plot.
+
+    Returns
+    -------
+    A dictionary of plotted graphs.
     """
-    graphs = {'distplot': plot_graph(graph_func=histplot, data=data,
-                                     title="Distribution Plot",
-                                     kwargs={"kde": True}),
-              'boxplot': plot_graph(graph_func=boxplot, data=data,
-                                    title="Box Plot"),
-              'violinplot': plot_graph(graph_func=violinplot, data=data,
-                                       title="Violin Plot")
-              }
-    return graphs
+    return {
+        "distplot": plot_graph(
+            graph_func=histplot,
+            data=data,
+            title="Distribution Plot",
+            kde=True,
+        ),
+        "boxplot": plot_graph(graph_func=boxplot, data=data, title="Box Plot"),
+        "violinplot": plot_graph(
+            graph_func=violinplot, data=data, title="Violin Plot"
+        ),
+    }
 
 
+def resolve_integer_or_float(*numbers):
+    """Cast float values as integers if their fractional parts are close to
+    zero.
 
+    Parameters
+    ----------
+    numbers : sequence
+        Number(s) to process.
+
+    Returns
+    -------
+    A number or list of numbers, appropriately transformed.
+    """
+    if len(numbers) == 1:
+        number = numbers[0]
+        return int(number) if number % 1 < 1e-6 else round(number, 4)
+    else:
+        return [
+            int(number) if number % 1 < 1e-6 else round(number, 4)
+            for number in numbers
+        ]
 
 
 def get_descriptive_stats(data):
-    """
-    Get basic descriptive statistics for the data: mean, standard deviation,
-    minimum, maximum and mode.
+    """Get basic descriptive statistics for the supplied data.
 
-    parameters
+    Parameters
     ----------
-    data: numpy.ndarray, pandas.DataFrame
-        The values to summarise.
+    data : numpy.ndarray, pandas.Series
+        An array of the values to summarise.
+
+    Returns
+    -------
+    A dictionary of summary statistics.
     """
-    stats = {'Mean': data.mean(),
-             'Standard Deviation': data.std(),
-             'Minimum': data.min(),
-             'Maximum': data.max(),
-             'Median': median(data),
-             'Mode': mode(data)
-             }
-    return {key: int_from_0_decimal(round(value, 4))
-            for key, value in stats.items()}
+    stats = {
+        "Mean": data.mean(),
+        "Standard Deviation": data.std(),
+        "Minimum": data.min(),
+        "Maximum": data.max(),
+        "Median": median(data),
+        "Mode": mode(data),
+    }
+    return {
+        key: resolve_integer_or_float(value) for key, value in stats.items()
+    }
 
 
-def get_random_sample(distribution="Normal", size=50, parameters=(0, 1)):
-    """Generate a random sample of the specified distribution.
+def process_parameters(distribution, param_list):
+    """Modify parameters supplied to ensure that they are valid arguments for
+    the distribution's sample-generating function.
 
-    parameters
+    Parameters
     ----------
-    distribution: str
+    distribution : str
+        The name of the probability distribution.
+    param_list : list
+        A list of parameter values.
+
+    Returns
+    -------
+    A list of parameter values.
+    """
+    param_list = resolve_integer_or_float(*param_list)
+
+    if not isinstance(param_list, list):
+        param_list = [param_list]
+
+    if distribution in {"Bernoulli", "Geometric"}:
+        probability = param_list[0]
+        return [probability] if 0 <= probability <= 1 else [0.5]
+    elif distribution in {"Binomial", "Negative Binomial"}:
+        n = round(param_list[0])  # number of trials must be an integer
+        probability = param_list[1] if 0 <= param_list[1] <= 1 else 0.5
+        return [n, probability]
+    else:
+        return param_list
+
+
+def process_random_sample(distribution, size, parameters):
+    """Generate a random sample of the specified distribution, plot its values
+    and calculate summary statistics.
+
+    Parameters
+    ----------
+    distribution : str
         The type of distribution. One of "Normal", "Poisson", "Bernoulli",
         "Uniform", "Geometric", "Alpha", "Beta", "Chi-squared", "Exponential",
         "F", "Gamma", "Pareto", "Student t", "Binomial" or "Negative Binomial".
-    size: int
-        The desired sample size
-    parameters: sequence
-        A list or tuple distribution-specific parameters passed on to SciPy.
+    size : int
+        The desired sample size.
+    parameters : sequence
+        A list or tuple of distribution-specific parameters.
+
+    Returns
+    -------
+    A dictionary with the sample's information and graphs.
     """
-    probabilistic_distributions = {
-        "Negative Binomial", "Binomial", "Geometric", "Bernoulli"
+    parameters = process_parameters(distribution, parameters)
+    parameter_info = distribution_data.loc[distribution][
+        "parameter_info"
+    ].split(",")
+
+    sample = pd.Series(
+        distribution_functions[distribution].rvs(*parameters, size=size),
+        name=f"{distribution} distribution sample",
+    ).round(7)
+    sample_bytes = sample.to_csv(index=False).encode("utf-8")
+
+    return {
+        "distribution": distribution,
+        "sample": b64encode(sample_bytes).decode("utf-8"),
+        "preview": sample.head(20),
+        "graphs": get_graphs(sample),
+        "summary_statistics": get_descriptive_stats(sample),
+        "parameters": zip(parameter_info, parameters),
+        "sample_size": size,
     }
-    # Ensure probabilities lie in the interval [0, 1]
-    if distribution in probabilistic_distributions:
-        parameters[-1] = validate_probability(parameters[-1])
-
-    return distributions[distribution].rvs(*parameters, size=size)
-
