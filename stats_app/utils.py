@@ -52,7 +52,7 @@ def plot_graph(graph_func, data, title, **kwargs):
     -------
     Base64-encoded string for a graph in PNG format.
     """
-    fig = Figure(figsize=(6, 4))
+    fig = Figure(figsize=(6, 4.5), dpi=180)
     ax = fig.subplots(nrows=1, ncols=1)
     # Plot the graph
     graph_func(x=data, color="#3FBFBF", ax=ax, **kwargs)
