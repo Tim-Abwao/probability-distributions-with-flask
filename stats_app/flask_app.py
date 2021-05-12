@@ -1,79 +1,54 @@
-from collections import defaultdict
-
-import pandas as pd
 from flask import Flask, redirect, render_template, request, url_for
 
-from stats_app import utils
-
+from stats_app.utils import distribution_data, process_random_sample
 
 app = Flask(__name__)
-
-
-data = defaultdict(list)
-data['distributions'] = pd.read_csv("data/distributions.csv",
-                                    index_col="distribution")
-data['chosen_dist'] = None
 
 
 @app.route("/")
 def index():
     """Homepage."""
-    return render_template("index.html", data=data['distributions'])
+    return render_template("index.html", data=distribution_data)
 
 
 @app.route("/summary", methods=["POST", "GET"])
 def summary():
-    """
-    Display a brief summary of the selected distribution, and set its
-    parameters.
+    """Display a brief summary of the selected distribution, and collect
+    parameter input values.
     """
     if request.method == "POST":
-        data['chosen_dist'] = request.form["chosen_dist"]
-        data['dist_info'] = data['distributions'].loc[data['chosen_dist']]
+        # Get selected distribution
+        current_distribution = request.form["chosen_dist"]
+        current_distribution_data = distribution_data.loc[current_distribution]
 
-        return render_template("summary.html", data=data, set_params=True)
+        return render_template("summary.html", data=current_distribution_data)
 
     return redirect(url_for("index"))
 
 
 @app.route("/sample_results", methods=["POST", "GET"])
 def sample_results():
-    """
-    Show graphs, descriptive statistics, and a preview of the generated sample.
+    """Display graphs, descriptive statistics, and a preview of the generated
+    sample.
     """
     if request.method == "POST":
-        if not data['chosen_dist']:  # If no distribution is currently selected
-            redirect(url_for('index'))
-
-        # Collect parameters from the submitted form
-        data['sample_size'] = int(request.form["sample_size"])
+        # Collect info & parameters from the submitted form
+        current_distribution = request.form["current-distribution"]
+        current_distribution_data = distribution_data.loc[current_distribution]
+        num_params = current_distribution_data["no_of_parameters"]
         parameters = [
-            float(request.form[f"parameter {param + 1}"])
-            for param in range(data['dist_info']["no_of_parameters"])
+            float(request.form[f"parameter {idx+1}"])
+            for idx in range(num_params)
         ]
-        data['parameters'] = [utils.int_from_0_decimal(param)
-                              for param in parameters]
+        sample_size = int(request.form["sample_size"])
 
         # Create and process the sample using provided parameters
-        random_sample = utils.get_random_sample(
-            distribution=data['chosen_dist'],
-            size=data['sample_size'],
-            parameters=data['parameters']
+        sample_results = process_random_sample(
+            distribution=current_distribution,
+            size=sample_size,
+            parameters=parameters,
         )
-        data['graphs'] = utils.get_graphs(random_sample)
-        data['summary_stats'] = utils.get_descriptive_stats(random_sample)
 
-        # Save the sample for download
-        utils.clear_old_files("csv")  # remove previous saved samples
-        sample_data = pd.Series(random_sample,
-                                name=f"{data['chosen_dist']}_distribution")
-        sample_filename = f"{data['chosen_dist']}_sample_data.csv"
-        sample_data.to_csv(f"stats_app/static/{sample_filename}",
-                           index=False)
-
-        data['preview'] = sample_data.head(20).round(4)
-        data['sample_name'] = sample_filename
-
-        return render_template("results.html", data=data)
+        return render_template("results.html", data=sample_results)
 
     return redirect(url_for("index"))
