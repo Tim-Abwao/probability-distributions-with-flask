@@ -1,26 +1,26 @@
 {% extends "base.html" %}
 {% block body %}
-<h2>{{ 'Current selection: '~ data['chosen_dist'] ~ ' Distribution'}}</h2>
+<h2>{{ 'Current selection: '~ data.name ~ ' Distribution'}}</h2>
 <div class="content">
 	<!-- Brief summary of the selected distribution -->
-	{% for info in data['dist_info']['summary'].split('|') %}
-		<p>{{ info }}</p>
+	{% for info in data['summary'].split('|') %}
+	<p>{{ info }}</p>
 	{% endfor %}
-	<a href="{{ data['dist_info']['wiki_link'] }}" target="_blank"> <i>learn more...</i></a><br>
+	<a href="{{ data['wiki_link'] }}" target="_blank"> <i>learn more...</i></a><br>
 </div>
 
 
 {# add form to input sample parameters #}
 <p>Fill out the fields below to create a sample, and see see how it looks.</p>
 <form action="{{ url_for('sample_results')}}" method="post">
-	{% for i in range(data['dist_info']['no_of_parameters']) %}
-		<label for="{{ 'parameter ' ~ (i+1) }}">{{ 'parameter ' ~ (i+1) }}</label>
-		<input id="{{ 'parameter ' ~ (i+1) }}" type="number" name="{{ 'parameter ' ~ (i+1) }}" min="0" max="1000"
-			step="0.001" required placeholder="{{ data['dist_info']['parameter_info'].split(',')[i] }}"><br>
+	{% for i in range(data['no_of_parameters']) %}
+	<label for="{{ 'parameter ' ~ (i+1) }}">{{ 'parameter ' ~ (i+1) }}</label>
+	<input id="{{ 'parameter ' ~ (i+1) }}" type="number" name="{{ 'parameter ' ~ (i+1) }}" min="0" max="1000"
+		step="0.001" required placeholder="{{ data['parameter_info'].split(',')[i] }}"><br>
 	{% endfor %}
 	<label for="sample_size">Sample Size</label>
-	<input id="sample_size" type="number" name="sample_size" min="10" max="500000" required><br>
-
+	<input id="sample_size" type="number" name="sample_size" min="10" max="50000" required><br>
+	<input id='current-distribution' type="text" name="current-distribution" value="{{ data.name }}" hidden>
 	<input id="submit-params" class="button" type="submit" value="Submit">
 </form>
 

@@ -9,7 +9,7 @@
 		body {
 			background-image: url("{{ url_for('static', filename='background.jpg') }}");
 			max-width: 70%;
-			margin: 4% auto;
+			margin: 7% auto;
 			font-size: 1.32em;
 			text-align: center;
 			font-family: Georgia, serif;
@@ -31,9 +31,12 @@
 
 		.button {
 			background: rgba(0, 128, 128, 0.8);
-			padding: 7px 20px;
+			font-size: 0.7em;
+			padding: 10px 30px;
 			width: 150px;
 			color: white;
+			margin: 2% auto;
+			display: block;
 		}
 
 		.button:hover {
@@ -53,13 +56,11 @@
 		}
 
 		.graphs {
-			border: 4px solid rgba(0, 128, 128, 0.6);
-			border-radius: 15px;
 			padding: 3%;
 			font-size: 0.8em;
 			margin: 4% auto;
 			font-style: italic;
-			max-width: 600px;
+			max-width: 80%;
 		}
 
 		a {
@@ -67,6 +68,9 @@
 			text-decoration: none;
 		}
 
+		form {
+			margin-bottom: 5%;
+		}
 
 		.footer {
 			margin-top: 10%;
@@ -74,6 +78,9 @@
 			bottom: 50px;
 		}
 
+		img {
+			width: 100%;
+		}
 
 		@media screen and (max-width: 768px) {
 			body {
@@ -82,6 +89,7 @@
 		}
 	</style>
 </head>
+
 <body>
 	{% block body %}{% endblock %}
 </body>
