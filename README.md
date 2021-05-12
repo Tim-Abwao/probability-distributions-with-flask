@@ -1,25 +1,25 @@
-# Statistical Distributions with Flask
+# Probability Distributions with Flask
 
-A simple app to learn basic facts about several popular and useful statistical distributions.
+A simple app to learn basic facts about several popular and useful probability distributions.
 
 Powered by:
 
-- [Flask][1] - web application interface
-- [Pandas][2] - data manipulation
-- [SciPy][3] - statistical distributions and functions
-- [Seaborn][4] - plotting/visualisation
+- [Flask][flask] - web application interface
+- [Pandas][pandas] - data manipulation
+- [SciPy][scipy] - generating samples from probability distributions
+- [Seaborn][seaborn] - plotting visualisations
 
 ![screencast](stats_app/static/screen.gif)
 
-A similar, interactive version of this app based on [Dash][5] is available [here][6].
+A similar, [interactive version][stats-app] of this app based on [Dash][dash] is also available.
 
 ## Getting Started
 
 - Download the files, create a virtual environment, and activate it:
 
     ```bash
-    git clone https://github.com/Tim-Abwao/statistical-distributions-flask.git
-    cd statistical-distributions-flask
+    git clone https://github.com/Tim-Abwao/probability-distributions-with-flask.git
+    cd probability-distributions-with-flask
     python3 -m venv venv
     source venv/bin/activate
     ```
@@ -31,7 +31,7 @@ A similar, interactive version of this app based on [Dash][5] is available [here
     pip install -r requirements.txt
     ```
 
-- Start the [flask development server][7]:
+- Start the [flask development server][dev-server]:
 
     ```bash
     export FLASK_APP=stats_app
@@ -39,12 +39,12 @@ A similar, interactive version of this app based on [Dash][5] is available [here
     flask run
     ```
 
-Afterwards, browse to <http://localhost:5000>. That's all, enjoy.
+    Afterwards, browse to <http://localhost:5000>.
 
-[1]: https://flask.palletsprojects.com/en/1.1.x/
-[2]: https://pandas.pydata.org
-[3]: https://www.scipy.org
-[4]: https://seaborn.pydata.org
-[5]: https://plotly.com/dash/
-[6]: https://statistics-distributions.herokuapp.com
-[7]: https://flask.palletsprojects.com/en/1.1.x/server/
+[flask]: https://flask.palletsprojects.com/
+[pandas]: https://pandas.pydata.org
+[scipy]: https://www.scipy.org
+[seaborn]: https://seaborn.pydata.org
+[dash]: https://plotly.com/dash/
+[stats-app]: https://probability-distributions.herokuapp.com
+[dev-server]: https://flask.palletsprojects.com/server/
