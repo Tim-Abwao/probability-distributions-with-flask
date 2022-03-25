@@ -13,10 +13,12 @@
 {# add form to input sample parameters #}
 <p>Fill out the fields below to create a sample, and see see how it looks.</p>
 <form action="{{ url_for('sample_results')}}" method="post">
-	{% for i in range(data['no_of_parameters']) %}
-	<label for="{{ 'parameter ' ~ (i+1) }}">{{ 'parameter ' ~ (i+1) }}</label>
-	<input id="{{ 'parameter ' ~ (i+1) }}" type="number" name="{{ 'parameter ' ~ (i+1) }}" min="0" max="1000"
-		step="0.001" required placeholder="{{ data['parameter_info'].split(',')[i] }}"><br>
+	{% set params = data['parameters'].split(',') %}
+	{% set param_info = data['parameter_info'].split(',') %}
+	{% for idx in range(data['no_of_parameters']) %}
+	<label for="{{ params[idx] }}">{{ params[idx] }}</label>
+	<input id="{{ params[idx] }}" type="number" name="{{ params[idx] }}" min="0" max="1000"
+		step="0.001" required placeholder="{{ param_info[idx] }}"><br>
 	{% endfor %}
 	<label for="sample_size">Sample Size</label>
 	<input id="sample_size" type="number" name="sample_size" min="10" max="50000" required><br>

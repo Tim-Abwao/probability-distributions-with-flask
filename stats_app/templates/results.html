@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block body %}
+
 <!-- Display current parameters -->
 <h3>Parameters</h3>
 <span><em>{{ 'Sample size: ' }}</em></span>
@@ -9,7 +10,7 @@
 <span style="color: teal;"> {{ value }} &emsp;</span><br>
 {% endfor %}
 
-<h3>Summary statistics</h3>
+<h3>Summary Statistics</h3>
 {% for statistic, value in data['summary_statistics'].items() %}
 <span><em>{{ statistic~':' }}</em></span>
 <span style="color: teal;"> {{ value }}</span><br>
@@ -18,7 +19,7 @@
 <div class="graphs">
 	<img src="{{'data:image/png;base64,' ~ data['graphs']['distplot'] }}">
 	<p>Distribution plots show the <a href="https://en.wikipedia.org/wiki/Probability_distribution">probability
-			distribution</a> of the random sample </p>
+			distribution</a> of the random sample.</p>
 </div>
 <div class="graphs">
 	<img src="{{'data:image/png;base64,' ~ data['graphs']['boxplot'] }}">
@@ -47,9 +48,9 @@
 	</table>
 
 	<footer>
-		<a class="button" href="data:text/csv;base64,{{ data['sample'] }}" download="{{data['distribution'] ~ '-sample.csv'}}">Download Sample </a>
-		
-		<br><br>
+		<a class="button" href="data:text/csv;base64,{{ data['sample'].decode('utf-8') }}"
+			download="{{data['distribution'] ~ '-sample.csv'}}">Download Sample </a>
+		<br>
 		<a class="button" href="{{ url_for('index') }} ">Back to home page</a>
 	</footer>
 </div>

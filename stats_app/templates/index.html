@@ -1,30 +1,31 @@
 {% extends "base.html" %}
 {% block body %}
+
+<h1>Probability Distribution Sampler</h1>
 <div class="content">
+	<p>This simple web app helps explore some useful <b>probability distributions</b>; and showcases the
+		functionality of <em>Flask, SciPy, Pandas, Matplotlib</em> and <em>Seaborn</em>.</p>
 
-	<h1>Probability Distribution Sampler</h1>
-	<p>This is a simple web app to help explore some useful <b>probability distributions</b>, and showcase the
-		functionality of some Python packages (Flask, SciPy, Pandas, Matplotlib and Seaborn, among others).</p>
-
-	<p>The idea is to enable anyone to: </p>
+	<p>The idea is to enable anyone to:</p>
 	<ul>
-		<li> get basic facts about a distribution </li>
-		<li> specificy parameters of choice</li>
-		<li> generate a downloadable sample, and</li>
-		<li> view graphs and summary statistics. </li>
+		<li>get basic facts about a probability distribution</li>
+		<li>specificy parameters of choice</li>
+		<li>generate a downloadable sample, and</li>
+		<li>view graphs and summary statistics.</li>
 	</ul>
 
 	<p>To give it a try, please select a distribution:</p>
-
-	<!-- Distribution selection -->
-	<form action="{{ url_for('summary')}}" method="post">
-		<label for="chosen_dist">Statistical Distribution: </label>
-		<select id="chosen_dist" name='chosen_dist'>
-			{% for distribution in data.index %}
-			<option value="{{ distribution }}">{{ distribution }}</option>
-			{% endfor %}
-		</select>
-		<input id="submit-dist" class="button" type="submit" value="Submit">
-	</form>
 </div>
+
+<!-- Distribution selection -->
+<form action="{{ url_for('summary')}}" method="post">
+	<label for="chosen_dist">Probability Distribution: </label>
+	<select id="chosen_dist" name='chosen_dist'>
+		{% for distribution in data.index %}
+		<option value="{{ distribution }}">{{ distribution }}</option>
+		{% endfor %}
+	</select>
+	<input id="submit-dist" class="button" type="submit" value="Submit">
+</form>
+
 {% endblock %}

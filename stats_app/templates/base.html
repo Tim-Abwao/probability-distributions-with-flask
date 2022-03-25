@@ -8,11 +8,10 @@
 	<style>
 		body {
 			background-image: url("{{ url_for('static', filename='background.jpg') }}");
-			max-width: 70%;
-			margin: 7% auto;
-			font-size: 1.32em;
+			font: 1.3em normal Georgia, serif;
+			margin: 6% auto;
+			max-width: 65%;
 			text-align: center;
-			font-family: Georgia, serif;
 		}
 
 		.content {
@@ -21,22 +20,23 @@
 
 		select,
 		input {
-			padding: 10px;
-			box-shadow: 2px 4px 8px rgb(4, 109, 109);
 			border: 1px;
-			border-radius: 7px;
+			border-radius: 4px;
+			box-shadow: 2px 4px 8px rgb(4, 109, 109);
 			margin: 20px;
+			padding: 10px;
 			width: 220px;
 		}
 
 		.button {
 			background: rgba(0, 128, 128, 0.8);
-			font-size: 0.7em;
-			padding: 10px 30px;
-			width: 150px;
+			border-radius: 4px;
 			color: white;
-			margin: 2% auto;
 			display: block;
+			font-size: 0.7em;
+			margin: 20px auto;
+			padding: 10px 30px;
+			width: 180px;
 		}
 
 		.button:hover {
@@ -56,11 +56,11 @@
 		}
 
 		.graphs {
-			padding: 3%;
-			font-size: 0.8em;
-			margin: 4% auto;
+			font-size: 0.7em;
 			font-style: italic;
+			margin: 4% auto;
 			max-width: 60%;
+			padding: 3%;
 		}
 
 		a {
@@ -72,23 +72,18 @@
 			margin-bottom: 5%;
 		}
 
-		.footer {
-			margin-top: 10%;
-			position: relative;
-			bottom: 50px;
-		}
-
 		img {
 			width: 100%;
 		}
 
-		@media screen and (max-width: 768px) {
+		@media screen and (max-width: 820px) {
 			body {
-				max-width: 80%;
+				margin: 10% auto;
+				max-width: 85%;
 			}
 
 			.graphs {
-				max-width: 80%;
+				max-width: 85%;
 			}
 		}
 	</style>
