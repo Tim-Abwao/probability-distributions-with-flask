@@ -1,5 +1,6 @@
 from base64 import b64encode
 from statistics import median, mode
+from typing import Sequence, Union
 
 import pandas as pd
 from scipy import stats
@@ -29,77 +30,72 @@ distribution_functions = {
 }
 
 
-def resolve_integer_or_float(*numbers):
-    """Cast float values as integers if their fractional parts are close to
-    zero.
+def resolve_integer_or_float(
+    numbers: list, *, threshold: float = 1e-6
+) -> list:
+    """Cast float values to integers if their fractional parts are close to
+    zero. Round float values to 4 decimal places.
 
-    Parameters
-    ----------
-    numbers : sequence
-        Number(s) to process.
+    Args:
+        numbers (list): A list of float values.
+        threshold (float, optional): Maximum size of the fractional part to
+            consider 'similar to zero'. Defaults to 1e-6.
 
-    Returns
-    -------
-    A number or list of numbers, appropriately transformed.
+    Returns:
+       list: A list of numbers, appropriately transformed.
     """
-    if len(numbers) == 1:
-        number = numbers[0]
-        return int(number) if number % 1 < 1e-6 else round(number, 4)
-    else:
-        return [
-            int(number) if number % 1 < 1e-6 else round(number, 4)
-            for number in numbers
+    return [
+        int(number) if number % 1 < 1e-6 else round(number, 4)
+        for number in numbers
+    ]
+
+
+def get_descriptive_stats(data: pd.Series) -> dict:
+    """Calculate descriptive statistics for the supplied `data`.
+
+    Args:
+        data (pd.Series): An array of the values to summarise.
+
+    Returns:
+        dict: A dictionary of summary statistics.
+    """
+    stats = [
+        "Mean",
+        "Standard Deviation",
+        "Minimum",
+        "Maximum",
+        "Median",
+        "Mode",
+    ]
+    values = resolve_integer_or_float(
+        [
+            data.mean(),
+            data.std(),
+            data.min(),
+            data.max(),
+            median(data),
+            mode(data),
         ]
+    )
+    return dict(zip(stats, values))
 
 
-def get_descriptive_stats(data):
-    """Get basic descriptive statistics for the supplied data.
+def process_parameters(distribution: str, param_list: list) -> list:
+    """Modify supplied parameters to ensure that they are valid arguments for
+    the `distribution`.
 
-    Parameters
-    ----------
-    data : numpy.ndarray, pandas.Series
-        An array of the values to summarise.
+    Args:
+        distribution (str): The type of probability distribution.
+        param_list (list): A list of parameter values.
 
-    Returns
-    -------
-    A dictionary of summary statistics.
+    Returns:
+        list: A list of parameter values.
     """
-    stats = {
-        "Mean": data.mean(),
-        "Standard Deviation": data.std(),
-        "Minimum": data.min(),
-        "Maximum": data.max(),
-        "Median": median(data),
-        "Mode": mode(data),
-    }
-    return {
-        key: resolve_integer_or_float(value) for key, value in stats.items()
-    }
-
-
-def process_parameters(distribution, param_list):
-    """Modify parameters supplied to ensure that they are valid arguments for
-    the distribution's sample-generating function.
-
-    Parameters
-    ----------
-    distribution : str
-        The name of the probability distribution.
-    param_list : list
-        A list of parameter values.
-
-    Returns
-    -------
-    A list of parameter values.
-    """
-    param_list = resolve_integer_or_float(*param_list)
-
-    if not isinstance(param_list, list):
-        param_list = [param_list]
+    param_list = resolve_integer_or_float(param_list)
 
     if distribution in {"Bernoulli", "Geometric"}:
-        probability = param_list[0]
-        return [probability] if 0 <= probability <= 1 else [0.5]
+        # Probability must be in interval [0, 1]
+        return param_list if 0 <= param_list[0] <= 1 else [0.5]
     elif distribution in {"Binomial", "Negative Binomial"}:
         n = round(param_list[0])  # number of trials must be an integer
         probability = param_list[1] if 0 <= param_list[1] <= 1 else 0.5
@@ -108,42 +104,35 @@ def process_parameters(distribution, param_list):
         return param_list
 
 
-def process_random_sample(distribution, size, parameters):
+def process_random_sample(
+    distribution: str, size: int, parameters: Sequence
+) -> dict:
     """Generate a random sample of the specified distribution, plot its values
     and calculate summary statistics.
 
-    Parameters
-    ----------
-    distribution : str
-        The type of distribution. One of "Normal", "Poisson", "Bernoulli",
-        "Uniform", "Geometric", "Alpha", "Beta", "Chi-squared", "Exponential",
-        "F", "Gamma", "Pareto", "Student t", "Binomial" or "Negative Binomial".
-    size : int
-        The desired sample size.
-    parameters : sequence
-        A list or tuple of distribution-specific parameters.
+    Args:
+        distribution (str): The type of probability distribution.
+        size (int): The desired sample size.
+        parameters (Sequence): Distribution-specific parameters.
 
-    Returns
-    -------
-    A dictionary with the sample's information and graphs.
+    Returns:
+        dict: A dictionary with the sample's properties and graphs.
     """
     parameters = process_parameters(distribution, parameters)
-    parameter_info = distribution_data.loc[distribution][
-        "parameter_info"
-    ].split(",")
+    parameter_info = distribution_data.at[distribution, "parameter_info"]
 
     sample = pd.Series(
         distribution_functions[distribution].rvs(*parameters, size=size),
         name=f"{distribution} distribution sample",
     ).round(7)
-    sample_bytes = sample.to_csv(index=False).encode("utf-8")
+    sample_as_bytes = sample.to_csv(index=False).encode("utf-8")
 
     return {
         "distribution": distribution,
-        "sample": b64encode(sample_bytes).decode("utf-8"),
+        "sample": b64encode(sample_as_bytes),
         "preview": sample.head(20),
         "graphs": get_graphs(sample),
         "summary_statistics": get_descriptive_stats(sample),
-        "parameters": zip(parameter_info, parameters),
+        "parameters": zip(parameter_info.split(","), parameters),
         "sample_size": size,
     }
