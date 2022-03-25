@@ -1,15 +1,10 @@
 from base64 import b64encode
-
-import pandas as pd
-from io import BytesIO
 from statistics import median, mode
 
-import matplotlib
-from matplotlib.figure import Figure
+import pandas as pd
 from scipy import stats
-from seaborn import boxplot, histplot, violinplot
 
-matplotlib.use("svg")  # Using the non-interactive svg back-end
+from stats_app.plotting import get_graphs
 
 distribution_data = pd.read_csv(
     "data/distributions.csv", index_col="distribution"
@@ -32,65 +27,6 @@ distribution_functions = {
     "Binomial": stats.binom,
     "Negative Binomial": stats.nbinom,
 }
-
-
-def plot_graph(graph_func, data, title, **kwargs):
-    """Get a graph for the supplied data using seaborn.
-
-    Parameters
-    ----------
-    graph_func : func
-        A seaborn plotting function.
-    data : array-like
-        The data values to plot.
-    title : str
-        A title for the graph to be plotted.
-    **kwargs
-        Extra keyword arguments to supply to graph_func.
-
-    Returns
-    -------
-    Base64-encoded string for a graph in PNG format.
-    """
-    fig = Figure(figsize=(6, 4.5), dpi=180)
-    ax = fig.subplots(nrows=1, ncols=1)
-    # Plot the graph
-    graph_func(x=data, color="#3FBFBF", ax=ax, **kwargs)
-    ax.tick_params(axis="x", rotation=45)
-    ax.set_title(title, fontsize=20, fontweight=550, pad=20)
-    fig.tight_layout()
-
-    # Get the graph in PNG format as a base64-encoded string
-    graph = BytesIO()
-    fig.savefig(graph, transparent=True)
-
-    return b64encode(graph.getvalue()).decode("utf-8")
-
-
-def get_graphs(data):
-    """Plot various types of graphs using the `plot_graph` function.
-
-    Parameters
-    ----------
-    data : sequence, array-like
-        The values to plot.
-
-    Returns
-    -------
-    A dictionary of plotted graphs.
-    """
-    return {
-        "distplot": plot_graph(
-            graph_func=histplot,
-            data=data,
-            title="Distribution Plot",
-            kde=True,
-        ),
-        "boxplot": plot_graph(graph_func=boxplot, data=data, title="Box Plot"),
-        "violinplot": plot_graph(
-            graph_func=violinplot, data=data, title="Violin Plot"
-        ),
-    }
 
 
 def resolve_integer_or_float(*numbers):

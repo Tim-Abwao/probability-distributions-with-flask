@@ -1,6 +1,6 @@
 from flask import Flask, redirect, render_template, request, url_for
 
-from stats_app.utils import distribution_data, process_random_sample
+from stats_app.stats_functions import distribution_data, process_random_sample
 
 app = Flask(__name__)
 
