@@ -130,7 +130,7 @@ def process_random_sample(
     return {
         "distribution": distribution,
         "sample": b64encode(sample_as_bytes),
-        "preview": sample.head(20),
+        "preview": sample.head(10),
         "graphs": get_graphs(sample),
         "summary_statistics": get_descriptive_stats(sample),
         "parameters": zip(parameter_info.split(","), parameters),
