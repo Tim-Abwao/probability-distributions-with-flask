@@ -33,16 +33,12 @@ def sample_results():
     """
     if request.method == "POST":
         # Collect info & parameters from the submitted form
-        current_distribution = request.form["current-distribution"]
-        current_distribution_data = distribution_data.loc[current_distribution]
-        num_params = current_distribution_data["no_of_parameters"]
-        parameters = [
-            float(request.form[f"parameter {idx+1}"])
-            for idx in range(num_params)
-        ]
-        sample_size = int(request.form["sample_size"])
+        param_dict = dict(request.form)
+        current_distribution = param_dict.pop("current-distribution")
+        sample_size = int(param_dict.pop("sample_size"))
+        parameters = map(float, param_dict.values())
 
-        # Create and process the sample using provided parameters
+        # Create and process the sample using specified parameters
         sample_results = process_random_sample(
             distribution=current_distribution,
             size=sample_size,
