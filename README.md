@@ -1,12 +1,12 @@
 # Probability Distributions with Flask
 
-A simple app to learn basic facts about several popular and useful probability distributions.
+A simple web app that introduces several popular and useful probability distributions.
 
 Powered by:
 
 - [Flask][flask] - web application interface
 - [Pandas][pandas] - data manipulation
-- [SciPy][scipy] - generating samples from probability distributions
+- [SciPy][scipy] - generating samples
 - [Seaborn][seaborn] - plotting visualisations
 
 ![screencast](stats_app/static/screen.gif)
