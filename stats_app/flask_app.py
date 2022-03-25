@@ -1,4 +1,6 @@
-from flask import Flask, redirect, render_template, request, url_for
+from typing import Union
+
+from flask import Flask, Response, redirect, render_template, request, url_for
 
 from stats_app.stats_functions import distribution_data, process_random_sample
 
@@ -6,15 +8,23 @@ app = Flask(__name__)
 
 
 @app.route("/")
-def index():
-    """Homepage."""
+def index() -> str:
+    """The home page.
+
+    Returns:
+        str: HTML text.
+    """
     return render_template("index.html", data=distribution_data)
 
 
 @app.route("/summary", methods=["POST", "GET"])
-def summary():
+def summary() -> Union[str, Response]:
     """Display a brief summary of the selected distribution, and collect
     parameter input values.
+
+    Returns:
+        Union[str, Response]: HTML text if the method is POST, or a response
+            redirecting to the home-page otherwise.
     """
     if request.method == "POST":
         # Get selected distribution
@@ -27,9 +37,13 @@ def summary():
 
 
 @app.route("/sample_results", methods=["POST", "GET"])
-def sample_results():
+def sample_results() -> Union[str, Response]:
     """Display graphs, descriptive statistics, and a preview of the generated
     sample.
+
+    Returns:
+        Union[str, Response]: HTML text if the method is POST, or a response
+            redirecting to the home-page otherwise.
     """
     if request.method == "POST":
         # Collect info & parameters from the submitted form
