@@ -34,9 +34,7 @@ A similar, [interactive version][stats-app] of this app based on [Dash][dash] is
 - Start the [flask development server][dev-server]:
 
     ```bash
-    export FLASK_APP=stats_app
-    export FLASK_ENV=development
-    flask run
+    flask --app stats_app run
     ```
 
     Afterwards, browse to <http://localhost:5000>.
